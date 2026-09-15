@@ -23,6 +23,14 @@ BEGIN
             USING HINT = 'Read this table through the catalog API.';
     END IF;
 
+    IF EXISTS (SELECT 1 FROM @lk@.table_encryption_keys k
+                WHERE k.warehouse_id = t.warehouse_id AND k.table_id = t.table_id) THEN
+        RAISE EXCEPTION
+            'pg_lakekeeper: % carries encryption keys, whose wrapped key material this extension does not read',
+            t.full_name
+            USING HINT = 'Read this table through the catalog API. lakekeeper.table_encryption_key lists which keys it references.';
+    END IF;
+
     SELECT jsonb_agg(@extschema@.schema_json(s.warehouse_id, s.table_id, s.schema_id)
                      ORDER BY s.schema_id)
       INTO part
@@ -92,7 +100,9 @@ BEGIN
                || CASE WHEN s.first_row_id IS NULL THEN '{}'::jsonb
                        ELSE jsonb_build_object('first-row-id', s.first_row_id) END
                || CASE WHEN s.assigned_rows IS NULL THEN '{}'::jsonb
-                       ELSE jsonb_build_object('assigned-rows', s.assigned_rows) END
+                       ELSE jsonb_build_object('added-rows', s.assigned_rows) END
+               || CASE WHEN s.key_id IS NULL THEN '{}'::jsonb
+                       ELSE jsonb_build_object('key-id', s.key_id) END
                ORDER BY s.sequence_number)
       INTO part
       FROM @lk@.table_snapshot s

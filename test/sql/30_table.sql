@@ -40,9 +40,27 @@ FROM lakekeeper.table_ref r
 ORDER BY r.ref_name;
 
 SELECT pgl_test.ok(
-    (SELECT count(*) FROM lakekeeper.table_snapshot_log) = 2
-    AND (SELECT count(*) FROM lakekeeper.table_metadata_log) = 2,
-    'both logs record each commit');
+    (SELECT count(*) FROM lakekeeper.table_snapshot_log l
+     JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+     WHERE t.full_name = 'sales.eu.orders') = 2
+    AND (SELECT count(*) FROM lakekeeper.table_metadata_log l
+         JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+         WHERE t.full_name = 'sales.eu.orders') = 2,
+    'both logs record every commit to a table');
+
+-- Row lineage and the encryption key reference, which only format version 3
+-- carries.
+SELECT t.full_name, s.snapshot_id, s.first_row_id, s.assigned_rows, s.key_id
+FROM lakekeeper.table_snapshot s
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+WHERE t.format_version = 3
+ORDER BY s.snapshot_id;
+
+SELECT pgl_test.ok(
+    (SELECT count(*) FROM lakekeeper.table_snapshot s
+     JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+     WHERE t.format_version < 3 AND s.first_row_id IS NOT NULL) = 0,
+    'a snapshot below format version 3 carries no row range');
 
 SELECT t.full_name, f.partition_spec_id, f.ordinal, f.field_id, f.source_id,
        f.name, f.transform

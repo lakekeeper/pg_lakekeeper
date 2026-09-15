@@ -91,7 +91,7 @@ Catalog state, in relational form:
 |---|---|
 | Server and tenancy | `server`, `project`, `warehouse` |
 | Naming | `namespace`, `tabular` |
-| Iceberg tables | `iceberg_table`, `table_property`, `table_snapshot`, `table_ref`, `table_snapshot_log`, `table_metadata_log`, `table_partition_field`, `table_sort_field`, `table_statistics`, `partition_statistics` |
+| Iceberg tables | `iceberg_table`, `table_property`, `table_snapshot`, `table_ref`, `table_snapshot_log`, `table_metadata_log`, `table_partition_field`, `table_sort_field`, `table_statistics`, `partition_statistics`, `table_encryption_key` |
 | Schemas | `tabular_schema`, `field` |
 | Iceberg views | `iceberg_view`, `view_version`, `view_representation`, `view_property`, `view_version_log` |
 | Other table formats | `generic_table`, `generic_table_property` |
@@ -110,9 +110,11 @@ Detail views are keyed by ids, not names: joining `table_property` to
 tabular or a namespace carries `warehouse_id`, because those ids are unique only
 within a warehouse.
 
-Storage credentials are never read. `warehouse.storage_profile` is the profile
-document, which holds bucket, endpoint and region settings;
+Key material is never read. `warehouse.storage_profile` is the profile document,
+which holds bucket, endpoint and region settings, and
 `warehouse.has_storage_credential` reports only whether a credential is stored.
+`table_encryption_key` names the keys a table references and who wrapped them,
+without the wrapped key itself.
 
 `grant` rows are what the catalog stores. An authorizer that keeps its own grant
 store enforces from there, and the allow-all authorizer records grants without
@@ -147,8 +149,13 @@ the same rows the views expose. Five functions assemble them in SQL:
   Nested types recurse through two internal functions, `_field_members` and
   `_field_type`, which call each other.
 - `table_metadata(warehouse_id, table_id)` builds the table metadata document.
-  Keys that the catalog omits when empty are omitted here too. A format version 1
-  table raises, because its document has a different shape.
+  Keys that the catalog omits when empty are omitted here too. Format version 3
+  adds `next-row-id` to the document and a row lineage range (`first-row-id` and
+  `added-rows`) plus an optional `key-id` to each snapshot, all read from the
+  columns that hold them. Two cases raise instead of returning a document that
+  looks complete: a format version 1 table, whose document has a different shape,
+  and a table carrying encryption keys, whose document includes wrapped key
+  material that this extension does not read.
 - `view_metadata(warehouse_id, view_id)` builds the view metadata document.
 - `load_table(warehouse_id, namespace, name)` and
   `load_view(warehouse_id, namespace, name)` return the load response,
@@ -211,8 +218,10 @@ one, namespaces three deep, a table with nested struct, list and map fields and 
 identifier field, a partition spec and a sort order, two snapshots with a branch
 and a tag, both statistics kinds, an Iceberg view with two versions and two
 dialects, a generic table, tags of all three value kinds on all six target kinds,
-grants at every resource level, a soft-deleted table, a protected table, and one
-table per allowed format version. `populate.sh` also captures the REST responses
+grants at every resource level, a soft-deleted table, a protected table, one table
+per allowed format version, a format version 3 table whose snapshots carry a row
+lineage range and an encryption key reference, and a table with an encryption key
+registered. `populate.sh` also captures the REST responses
 the document functions are compared against, with vended storage credentials
 removed.
 

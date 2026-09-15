@@ -15,13 +15,14 @@ ORDER BY w.warehouse_name, t.full_name;
 ----------------+--------------------+---------------+---------+-----------+--------------+----------------------
  wh_hard        | logs.audit         | table         | t       | t         | f            | t
  wh_hard        | logs.delta_events  | generic-table | t       | f         | f            | f
+ wh_hard        | logs.encrypted_v3  | table         | t       | f         | f            | t
  wh_hard        | logs.events        | table         | t       | f         | f            | t
  wh_hard        | logs.legacy_v1     | table         | t       | f         | f            | t
  wh_hard        | sales.eu.eu_orders | view          | t       | f         | f            | t
  wh_hard        | sales.eu.orders    | table         | t       | f         | f            | t
  wh_hard        | sales.eu.orders_v3 | table         | t       | f         | f            | t
  wh_soft        | staging.retired    | table         | f       | f         | t            | t
-(8 rows)
+(9 rows)
 
 SELECT pgl_test.ok(
     (SELECT location FROM lakekeeper.tabular WHERE full_name = 'sales.eu.orders')

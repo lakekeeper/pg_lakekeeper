@@ -206,6 +206,54 @@ req POST "$cat/namespaces/$eu/tables" '{
     "properties": {"format-version": "3"},
     "stage-create": false}' >/dev/null
 
+orders_v3=$(req GET "$cat/namespaces/$eu/tables/orders_v3" | jq -r '.metadata."table-uuid"')
+
+# Row lineage, which only format version 3 carries: a snapshot names the range
+# of row ids it assigns, and may name the key its data files are encrypted with.
+req POST "$cat/namespaces/$eu/tables/orders_v3" "{
+    \"identifier\": {\"namespace\": [\"sales\", \"eu\"], \"name\": \"orders_v3\"},
+    \"requirements\": [{\"type\": \"assert-table-uuid\", \"uuid\": \"$orders_v3\"}],
+    \"updates\": [
+        {\"action\": \"add-snapshot\", \"snapshot\": {
+            \"snapshot-id\": 4001, \"sequence-number\": 1, \"timestamp-ms\": $now_ms,
+            \"manifest-list\": \"s3://warehouse/hard/sales/eu/orders_v3/metadata/snap-4001.avro\",
+            \"schema-id\": 0, \"first-row-id\": 0, \"added-rows\": 25,
+            \"summary\": {\"operation\": \"append\",
+                \"added-data-files\": \"1\", \"added-records\": \"25\",
+                \"total-data-files\": \"1\", \"total-delete-files\": \"0\",
+                \"total-records\": \"25\", \"total-files-size\": \"512\"}}},
+        {\"action\": \"add-snapshot\", \"snapshot\": {
+            \"snapshot-id\": 4002, \"parent-snapshot-id\": 4001,
+            \"sequence-number\": 2, \"timestamp-ms\": $(( now_ms + 1000 )),
+            \"manifest-list\": \"s3://warehouse/hard/sales/eu/orders_v3/metadata/snap-4002.avro\",
+            \"schema-id\": 0, \"first-row-id\": 25, \"added-rows\": 10,
+            \"key-id\": \"fixture-key-1\",
+            \"summary\": {\"operation\": \"append\",
+                \"added-data-files\": \"1\", \"added-records\": \"10\",
+                \"total-data-files\": \"2\", \"total-delete-files\": \"0\",
+                \"total-records\": \"35\", \"total-files-size\": \"1024\"}}},
+        {\"action\": \"set-snapshot-ref\", \"ref-name\": \"main\",
+         \"type\": \"branch\", \"snapshot-id\": 4002}]}" >/dev/null
+
+# A table whose data files are encrypted: the catalog's document carries the
+# wrapped key material, which this extension does not read.
+req POST "$cat/namespaces/logs/tables" '{
+    "name": "encrypted_v3",
+    "schema": {"type": "struct", "schema-id": 0, "fields": [
+        {"id": 1, "name": "id", "required": true, "type": "long"}]},
+    "properties": {"format-version": "3"},
+    "stage-create": false}' >/dev/null
+
+encrypted_v3=$(req GET "$cat/namespaces/logs/tables/encrypted_v3" \
+    | jq -r '.metadata."table-uuid"')
+req POST "$cat/namespaces/logs/tables/encrypted_v3" "{
+    \"identifier\": {\"namespace\": [\"logs\"], \"name\": \"encrypted_v3\"},
+    \"requirements\": [{\"type\": \"assert-table-uuid\", \"uuid\": \"$encrypted_v3\"}],
+    \"updates\": [{\"action\": \"add-encryption-key\", \"encryption-key\": {
+        \"key-id\": \"fixture-dek-1\",
+        \"encrypted-key-metadata\": \"$(printf 'fixture-wrapped-key' | base64 | tr -d '\n')\",
+        \"encrypted-by-id\": \"fixture-kek-1\"}}]}" >/dev/null
+
 req POST "$cat/namespaces/logs/tables" '{
     "name": "legacy_v1",
     "schema": {"type": "struct", "schema-id": 0, "fields": [

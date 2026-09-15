@@ -62,4 +62,15 @@ FROM lakekeeper.warehouse t WHERE t.warehouse_name = 'wh_hard';
 SELECT lakekeeper.table_metadata(t.warehouse_id, t.table_id)
 FROM lakekeeper.iceberg_table t WHERE t.full_name = 'logs.legacy_v1';
 
+-- So does a table whose document would carry wrapped encryption keys.
+SELECT lakekeeper.table_metadata(t.warehouse_id, t.table_id)
+FROM lakekeeper.iceberg_table t WHERE t.full_name = 'logs.encrypted_v3';
+
+SELECT t.full_name, k.key_id, k.encrypted_by_id, k.properties
+FROM lakekeeper.table_encryption_key k
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, k.key_id;
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_encryption_key');
+
 SELECT pgl_test.inlined('SELECT * FROM lakekeeper.iceberg_table');

@@ -95,6 +95,27 @@ FROM lakekeeper.iceberg_table t WHERE t.full_name = 'logs.legacy_v1';
 ERROR:  pg_lakekeeper: logs.legacy_v1 is format version 1, whose metadata has a different shape
 HINT:  Read this table through the catalog API.
 CONTEXT:  PL/pgSQL function lakekeeper.table_metadata(uuid,uuid) line 17 at RAISE
+-- So does a table whose document would carry wrapped encryption keys.
+SELECT lakekeeper.table_metadata(t.warehouse_id, t.table_id)
+FROM lakekeeper.iceberg_table t WHERE t.full_name = 'logs.encrypted_v3';
+ERROR:  pg_lakekeeper: logs.encrypted_v3 carries encryption keys, whose wrapped key material this extension does not read
+HINT:  Read this table through the catalog API. lakekeeper.table_encryption_key lists which keys it references.
+CONTEXT:  PL/pgSQL function lakekeeper.table_metadata(uuid,uuid) line 25 at RAISE
+SELECT t.full_name, k.key_id, k.encrypted_by_id, k.properties
+FROM lakekeeper.table_encryption_key k
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, k.key_id;
+     full_name     |    key_id     | encrypted_by_id | properties 
+-------------------+---------------+-----------------+------------
+ logs.encrypted_v3 | fixture-dek-1 | fixture-kek-1   | {}
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_encryption_key');
+ inlined 
+---------
+ 
+(1 row)
+
 SELECT pgl_test.inlined('SELECT * FROM lakekeeper.iceberg_table');
  inlined 
 ---------

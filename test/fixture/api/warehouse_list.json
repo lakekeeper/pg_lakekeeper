@@ -9,7 +9,7 @@
       "delete-profile": {
         "type": "hard"
       },
-      "id": "01a0a69e-be86-7492-8cf9-a37234d52a0b",
+      "id": "01a0a6c3-c942-7e40-9a9b-90ea9d299090",
       "managed-by": "self-managed",
       "name": "wh_hard",
       "project-id": "00000000-0000-0000-0000-000000000000",
@@ -42,7 +42,7 @@
         "type": "s3"
       },
       "updated-at": null,
-      "warehouse-id": "01a0a69e-be86-7492-8cf9-a37234d52a0b"
+      "warehouse-id": "01a0a6c3-c942-7e40-9a9b-90ea9d299090"
     },
     {
       "allowed-format-versions": [
@@ -54,7 +54,7 @@
         "expiration-seconds": 86400,
         "type": "soft"
       },
-      "id": "01a0a69e-bebe-7a42-98a3-623f1d567bd4",
+      "id": "01a0a6c3-c979-7b50-8524-c8d99142056e",
       "managed-by": "self-managed",
       "name": "wh_soft",
       "project-id": "00000000-0000-0000-0000-000000000000",
@@ -86,8 +86,8 @@
         "sts-token-validity-seconds": 3600,
         "type": "s3"
       },
-      "updated-at": "2026-09-15T19:50:16.635364Z",
-      "warehouse-id": "01a0a69e-bebe-7a42-98a3-623f1d567bd4"
+      "updated-at": "2026-09-15T20:30:44.210078Z",
+      "warehouse-id": "01a0a6c3-c979-7b50-8524-c8d99142056e"
     }
   ]
 }

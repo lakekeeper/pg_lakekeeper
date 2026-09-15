@@ -118,6 +118,7 @@ RETURNS TABLE (
     total_files_size   bigint,
     first_row_id       bigint,
     assigned_rows      bigint,
+    key_id             text,
     summary            jsonb,
     created_at         timestamptz,
     updated_at         timestamptz
@@ -145,6 +146,7 @@ AS $body$
            (s.summary->>'total-files-size')::bigint,
            s.first_row_id,
            s.assigned_rows,
+           s.key_id,
            s.summary,
            s.created_at,
            s.updated_at
@@ -156,7 +158,7 @@ CREATE VIEW @extschema@.table_snapshot WITH (security_invoker = true) AS
     SELECT * FROM @extschema@._table_snapshot();
 
 COMMENT ON VIEW @extschema@.table_snapshot IS
-    'Snapshots. The standard summary counters are typed columns; summary keeps every key the writer set.';
+    'Snapshots. The standard summary counters are typed columns; summary keeps every key the writer set. first_row_id and assigned_rows are the row lineage range format version 3 carries, and assigned_rows is the Iceberg document''s added-rows. key_id names the encryption key the data files use; no key material is exposed.';
 
 SELECT @extschema@._define($def$
 CREATE FUNCTION @extschema@._table_ref()
@@ -241,6 +243,31 @@ CREATE VIEW @extschema@.table_metadata_log WITH (security_invoker = true) AS
 
 COMMENT ON VIEW @extschema@.table_metadata_log IS
     'Previous metadata files, in the order they were replaced.';
+
+SELECT @extschema@._define($def$
+CREATE FUNCTION @extschema@._table_encryption_key()
+RETURNS TABLE (
+    warehouse_id    uuid,
+    table_id        uuid,
+    key_id          text,
+    encrypted_by_id text,
+    properties      jsonb,
+    created_at      timestamptz,
+    updated_at      timestamptz
+)
+LANGUAGE sql STABLE
+AS $body$
+    SELECT k.warehouse_id, k.table_id, k.key_id, k.encrypted_by_id, k.properties,
+           k.created_at, k.updated_at
+    FROM @lk@.table_encryption_keys k
+$body$;
+$def$);
+
+CREATE VIEW @extschema@.table_encryption_key WITH (security_invoker = true) AS
+    SELECT * FROM @extschema@._table_encryption_key();
+
+COMMENT ON VIEW @extschema@.table_encryption_key IS
+    'Which encryption keys a table references. The wrapped key material is not exposed.';
 
 SELECT @extschema@._define($def$
 CREATE FUNCTION @extschema@._table_partition_field()

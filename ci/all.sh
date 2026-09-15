@@ -8,7 +8,7 @@ cd "$root"
 ci/lint.sh
 ci/check-parity.sh
 
-for pg in 18 17 15; do
+for pg in 18 17 16 15; do
     ci/test.sh "$pg"
 done
 

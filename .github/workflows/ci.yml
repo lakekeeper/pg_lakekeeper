@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pg: ['18', '17', '15']
+        pg: ['18', '17', '16', '15']
     steps:
       - uses: actions/checkout@v4
       - run: ci/test.sh ${{ matrix.pg }}

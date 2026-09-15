@@ -55,9 +55,11 @@ service to deploy, monitor, or upgrade.
 
 ## Install
 
-Phase 1 is pure SQL. Build it and install it into the PostgreSQL instance that
-hosts Lakekeeper's database (the `make install` step writes into PostgreSQL's
-extension directory and needs permission to do so):
+Phase 1 is pure SQL. It needs PostgreSQL 15 or newer, because every view is a
+`security_invoker` view, and is tested on 15, 16, 17 and 18. Build it and install
+it into the PostgreSQL instance that hosts Lakekeeper's database (the
+`make install` step writes into PostgreSQL's extension directory and needs
+permission to do so):
 
 ```sh
 make

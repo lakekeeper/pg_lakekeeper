@@ -73,8 +73,10 @@ make standalone
 psql -d lakekeeper -f pg_lakekeeper-standalone.sql
 ```
 
-If Lakekeeper runs with `LAKEKEEPER__PG_SCHEMA` set, tell the extension the same
-schema before installing it:
+The extension finds Lakekeeper's tables by looking for its migration table, so a
+`LAKEKEEPER__PG_SCHEMA` deployment installs the same way. Record the schema name
+as a setting too, so that restoring into an empty database (where there is no
+migration table to find yet) binds to the right schema:
 
 ```sql
 ALTER DATABASE lakekeeper SET pg_lakekeeper.lakekeeper_schema = 'lk_catalog';
@@ -161,7 +163,7 @@ warehouses, roles, and permissions, all queryable with `SELECT`.
   Postgres.
 - Write paths are out of scope: writes keep going through the standalone service until
   Phase 2, and a pure-SQL write path could race the running service's own writes.
-- Forces us to define the SQL interface Phase 2 needs anyway.
+- Defines the SQL interface Phase 2 builds on.
 
 This is a thin layer, and that is the point: it is small enough to finish and useful on
 its own.

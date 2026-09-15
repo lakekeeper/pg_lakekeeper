@@ -1,0 +1,179 @@
+-- Iceberg table detail.
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.iceberg_table WHERE warehouse_id = gen_random_uuid()');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_property');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_snapshot');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_ref');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_snapshot_log');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_metadata_log');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_partition_field');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_sort_field');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.table_statistics');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.partition_statistics');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT full_name, format_version, current_schema_id, default_partition_spec_id,
+       default_sort_order_id, current_snapshot_id, last_column_id,
+       last_partition_id, last_sequence_number, next_row_id, is_live
+FROM lakekeeper.iceberg_table
+ORDER BY full_name;
+    full_name    | format_version | current_schema_id | default_partition_spec_id | default_sort_order_id | current_snapshot_id | last_column_id | last_partition_id | last_sequence_number | next_row_id | is_live 
+-----------------+----------------+-------------------+---------------------------+-----------------------+---------------------+----------------+-------------------+----------------------+-------------+---------
+ logs.audit      |              2 |                 0 |                         0 |                     0 |                     |              1 |               999 |                    0 |           0 | t
+ logs.events     |              2 |                 0 |                         0 |                     0 |                     |              2 |               999 |                    0 |           0 | t
+ sales.eu.orders |              2 |                 0 |                         0 |                     1 |                3002 |             11 |              1000 |                    2 |           0 | t
+ staging.retired |              2 |                 0 |                         0 |                     0 |                     |              1 |               999 |                    0 |           0 | f
+(4 rows)
+
+SELECT pgl_test.ok(
+    (SELECT current_snapshot_id FROM lakekeeper.iceberg_table
+     WHERE full_name = 'sales.eu.orders') = 3002,
+    'current_snapshot_id follows the main branch');
+ ok 
+----
+ 
+(1 row)
+
+SELECT t.full_name, p.key, p.value
+FROM lakekeeper.table_property p
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, p.key;
+    full_name    |         key          |   value   
+-----------------+----------------------+-----------
+ sales.eu.orders | owner                | analytics
+ sales.eu.orders | write.format.default | parquet
+(2 rows)
+
+SELECT s.snapshot_id, s.parent_snapshot_id, s.sequence_number, s.operation,
+       s.added_data_files, s.deleted_data_files, s.total_data_files,
+       s.total_delete_files, s.added_records, s.deleted_records, s.total_records,
+       s.added_files_size, s.removed_files_size, s.total_files_size
+FROM lakekeeper.table_snapshot s
+ORDER BY s.snapshot_id;
+ snapshot_id | parent_snapshot_id | sequence_number | operation | added_data_files | deleted_data_files | total_data_files | total_delete_files | added_records | deleted_records | total_records | added_files_size | removed_files_size | total_files_size 
+-------------+--------------------+-----------------+-----------+------------------+--------------------+------------------+--------------------+---------------+-----------------+---------------+------------------+--------------------+------------------
+        3001 |                    |               1 | append    |                2 |                    |                2 |                  0 |           100 |                 |           100 |                  |                    |             2048
+        3002 |               3001 |               2 | append    |                1 |                  0 |                3 |                  0 |            50 |               0 |           150 |                  |                  0 |             3072
+(2 rows)
+
+SELECT r.ref_name, r.ref_type, r.snapshot_id, r.min_snapshots_to_keep,
+       r.max_snapshot_age_ms, r.max_ref_age_ms
+FROM lakekeeper.table_ref r
+ORDER BY r.ref_name;
+ ref_name | ref_type | snapshot_id | min_snapshots_to_keep | max_snapshot_age_ms | max_ref_age_ms 
+----------+----------+-------------+-----------------------+---------------------+----------------
+ main     | branch   |        3002 |                     2 |           604800000 |               
+ release  | tag      |        3001 |                       |                     |     2592000000
+(2 rows)
+
+SELECT pgl_test.ok(
+    (SELECT count(*) FROM lakekeeper.table_snapshot_log) = 2
+    AND (SELECT count(*) FROM lakekeeper.table_metadata_log) = 2,
+    'both logs record each commit');
+ ok 
+----
+ 
+(1 row)
+
+SELECT t.full_name, f.partition_spec_id, f.ordinal, f.field_id, f.source_id,
+       f.name, f.transform
+FROM lakekeeper.table_partition_field f
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, f.ordinal NULLS FIRST;
+    full_name    | partition_spec_id | ordinal | field_id | source_id |     name      | transform 
+-----------------+-------------------+---------+----------+-----------+---------------+-----------
+ logs.audit      |                 0 |         |          |           |               | 
+ logs.events     |                 0 |         |          |           |               | 
+ sales.eu.orders |                 0 |       1 |     1000 |         2 | placed_at_day | day
+ staging.retired |                 0 |         |          |           |               | 
+(4 rows)
+
+SELECT t.full_name, o.sort_order_id, o.ordinal, o.source_id, o.transform,
+       o.direction, o.null_order
+FROM lakekeeper.table_sort_field o
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, o.ordinal NULLS FIRST;
+    full_name    | sort_order_id | ordinal | source_id | transform | direction | null_order  
+-----------------+---------------+---------+-----------+-----------+-----------+-------------
+ logs.audit      |             0 |         |           |           |           | 
+ logs.events     |             0 |         |           |           |           | 
+ sales.eu.orders |             1 |       1 |         1 | identity  | asc       | nulls-first
+ staging.retired |             0 |         |           |           |           | 
+(4 rows)
+
+-- A spec with no fields still contributes a row, so a table is never missing
+-- from a partition listing.
+SELECT pgl_test.ok(
+    (SELECT count(DISTINCT table_id) FROM lakekeeper.table_partition_field)
+        = (SELECT count(*) FROM lakekeeper.iceberg_table),
+    'every table appears in the partition field listing');
+ ok 
+----
+ 
+(1 row)
+
+SELECT snapshot_id, statistics_path LIKE '%stats-3002.puffin' AS path_matches,
+       file_size_in_bytes, file_footer_size_in_bytes,
+       jsonb_array_length(blob_metadata) AS blobs
+FROM lakekeeper.table_statistics
+ORDER BY snapshot_id;
+ snapshot_id | path_matches | file_size_in_bytes | file_footer_size_in_bytes | blobs 
+-------------+--------------+--------------------+---------------------------+-------
+        3002 | t            |               1024 |                        64 |     1
+(1 row)
+
+SELECT snapshot_id, file_size_in_bytes
+FROM lakekeeper.partition_statistics
+ORDER BY snapshot_id;
+ snapshot_id | file_size_in_bytes 
+-------------+--------------------
+        3002 |                512
+(1 row)
+

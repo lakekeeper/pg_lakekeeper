@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "current-schema-id": 0,
+    "default-sort-order-id": 0,
+    "default-spec-id": 0,
+    "format-version": 1,
+    "last-column-id": 1,
+    "last-partition-id": 999,
+    "last-updated-ms": 1789500973224,
+    "location": "s3://warehouse/hard/01a0a691-e0a8-7fd3-b478-0f64e1d06e64",
+    "partition-spec": [],
+    "partition-specs": [
+      {
+        "fields": [],
+        "spec-id": 0
+      }
+    ],
+    "schema": {
+      "fields": [
+        {
+          "id": 1,
+          "name": "id",
+          "required": true,
+          "type": "long"
+        }
+      ],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "id",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "sort-orders": [
+      {
+        "fields": [],
+        "order-id": 0
+      }
+    ],
+    "table-uuid": "01a0a691-e0a8-7fd3-b478-0f64e1d06e64"
+  },
+  "metadata-location": "s3://warehouse/hard/01a0a691-e0a8-7fd3-b478-0f64e1d06e64/metadata/00000-01a0a691-e0a8-7fd3-b478-0f7adff3cdb0.gz.metadata.json"
+}

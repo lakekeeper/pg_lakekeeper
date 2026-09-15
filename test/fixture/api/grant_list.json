@@ -1,17 +1,17 @@
 {
   "grants": [
     {
-      "created-at": "2026-09-15T19:24:35.132294Z",
+      "created-at": "2026-09-15T19:36:13.722153Z",
       "principal": {
-        "role": "01a0a687-359c-7c50-a6cb-3c0535628def"
+        "role": "01a0a691-de39-70c0-8701-cdf37dc1e4a4"
       },
       "privilege": "use",
       "recognized": true,
       "resource": {
         "type": "warehouse",
-        "warehouse-id": "01a0a687-35f4-7dc3-9043-216b1fe4b387"
+        "warehouse-id": "01a0a691-de99-7661-8eb1-971957b43cd4"
       }
     }
   ],
-  "next-page-token": "MSYxNzg5NTAwMjc1MTMyMjk0JjE1YzEwMzBhLWIxM2ItMTFmMS1hZDU3LTU3NmExOGYwYTJhNg"
+  "next-page-token": "MSYxNzg5NTAwOTczNzIyMTUzJmI2MjU2YjI4LWIxM2MtMTFmMS1iZmM1LWU3NjExOTNlODUwYQ"
 }

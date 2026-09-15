@@ -20,11 +20,13 @@ ORDER BY t.full_name, s.schema_id;
 --------------------+-----------+-------
  logs.audit         |         0 | table
  logs.events        |         0 | table
+ logs.legacy_v1     |         0 | table
  sales.eu.eu_orders |         0 | view
  sales.eu.eu_orders |         1 | view
  sales.eu.orders    |         0 | table
+ sales.eu.orders_v3 |         0 | table
  staging.retired    |         0 | table
-(6 rows)
+(8 rows)
 
 SELECT f.field_id, f.parent_field_id, f.ordinal, f.node_role, f.name,
        f.type_name, f.required, f.is_identifier, f.doc

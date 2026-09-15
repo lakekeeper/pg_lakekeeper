@@ -2,7 +2,7 @@
   "metadata": {
     "current-version-id": 2,
     "format-version": 1,
-    "location": "s3://warehouse/hard/01a0a687-3883-7a22-8d29-04bca56028f7",
+    "location": "s3://warehouse/hard/01a0a691-e169-7470-913f-d1add9c6715c",
     "properties": {
       "owner": "analytics"
     },
@@ -40,39 +40,15 @@
     ],
     "version-log": [
       {
-        "timestamp-ms": 1789500274820,
+        "timestamp-ms": 1789500973417,
         "version-id": 1
       },
       {
-        "timestamp-ms": 1789500274000,
+        "timestamp-ms": 1789500972000,
         "version-id": 2
       }
     ],
     "versions": [
-      {
-        "default-namespace": [
-          "sales",
-          "eu"
-        ],
-        "representations": [
-          {
-            "dialect": "spark",
-            "sql": "SELECT order_id, amount FROM orders",
-            "type": "sql"
-          },
-          {
-            "dialect": "trino",
-            "sql": "SELECT order_id, amount FROM orders",
-            "type": "sql"
-          }
-        ],
-        "schema-id": 0,
-        "summary": {
-          "engine-name": "fixture"
-        },
-        "timestamp-ms": 1789500274820,
-        "version-id": 1
-      },
       {
         "default-namespace": [
           "sales",
@@ -94,11 +70,35 @@
         "summary": {
           "engine-name": "fixture"
         },
-        "timestamp-ms": 1789500274000,
+        "timestamp-ms": 1789500972000,
         "version-id": 2
+      },
+      {
+        "default-namespace": [
+          "sales",
+          "eu"
+        ],
+        "representations": [
+          {
+            "dialect": "spark",
+            "sql": "SELECT order_id, amount FROM orders",
+            "type": "sql"
+          },
+          {
+            "dialect": "trino",
+            "sql": "SELECT order_id, amount FROM orders",
+            "type": "sql"
+          }
+        ],
+        "schema-id": 0,
+        "summary": {
+          "engine-name": "fixture"
+        },
+        "timestamp-ms": 1789500973417,
+        "version-id": 1
       }
     ],
-    "view-uuid": "01a0a687-3883-7a22-8d29-04bca56028f7"
+    "view-uuid": "01a0a691-e169-7470-913f-d1add9c6715c"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a687-3883-7a22-8d29-04bca56028f7/metadata/00001-01a0a687-38ab-7951-ab9c-d21213da765d.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a691-e169-7470-913f-d1add9c6715c/metadata/00001-01a0a691-e190-7551-bd68-ae14c9eda190.gz.metadata.json"
 }

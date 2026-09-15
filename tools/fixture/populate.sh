@@ -196,6 +196,23 @@ req POST "$cat/namespaces/logs/tables" '{
         {"id": 2, "name": "payload", "required": false, "type": "binary"}]},
     "stage-create": false}' >/dev/null
 
+# One table per format version the warehouse allows, so the metadata document
+# is exercised on each of them.
+req POST "$cat/namespaces/$eu/tables" '{
+    "name": "orders_v3",
+    "schema": {"type": "struct", "schema-id": 0, "fields": [
+        {"id": 1, "name": "order_id", "required": true, "type": "long"},
+        {"id": 2, "name": "tag", "required": false, "type": "string"}]},
+    "properties": {"format-version": "3"},
+    "stage-create": false}' >/dev/null
+
+req POST "$cat/namespaces/logs/tables" '{
+    "name": "legacy_v1",
+    "schema": {"type": "struct", "schema-id": 0, "fields": [
+        {"id": 1, "name": "id", "required": true, "type": "long"}]},
+    "properties": {"format-version": "1"},
+    "stage-create": false}' >/dev/null
+
 # Protected, so the protection flag is non-uniform across rows.
 req POST "$cat/namespaces/logs/tables" '{
     "name": "audit",
@@ -317,6 +334,8 @@ capture tag_definition_list "$mgmt/tag-definition"
 capture grant_list "$mgmt/warehouse/$wh_hard/grants"
 capture load_table_orders "$cat/namespaces/$eu/tables/orders"
 capture load_table_events "$cat/namespaces/logs/tables/events"
+capture load_table_orders_v3 "$cat/namespaces/$eu/tables/orders_v3"
+capture load_table_legacy_v1 "$cat/namespaces/logs/tables/legacy_v1"
 capture load_view_eu_orders "$cat/namespaces/$eu/views/eu_orders"
 
 printf 'populated: warehouses %s %s %s, project %s\n' "$wh_hard" "$wh_soft" "$wh_off" "$finance"

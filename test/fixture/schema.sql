@@ -2,15 +2,14 @@
 -- PostgreSQL database dump
 --
 
-\restrict C1YRCbxKYiRJFHps0z0byJqoJYGLYSdHEo9CYEXqBPutPPhmLF50H3lAaPzK4b3
+\restrict JagoEsv55gWHboNSfDK94kXPW0Wqk6EGlnLcHA9YDF2X0ly3YY7WbddFWIb35qW
 
--- Dumped from database version 18.4 (Debian 18.4-1.pgdg13+1)
--- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
+-- Dumped from database version 15.19 (Debian 15.19-1.pgdg13+2)
+-- Dumped by pg_dump version 15.19 (Debian 15.19-1.pgdg13+2)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -847,7 +846,7 @@ CREATE TABLE "public"."warehouse" (
     "status" "public"."warehouse_status" NOT NULL,
     "tabular_expiration_seconds" bigint,
     "tabular_delete_mode" "public"."tabular_delete_mode" NOT NULL,
-    "project_id" "text" CONSTRAINT "warehouse_project_id_text_not_null" NOT NULL,
+    "project_id" "text" NOT NULL,
     "protected" boolean DEFAULT false NOT NULL,
     "version" bigint DEFAULT 0 NOT NULL,
     "allowed_format_versions" smallint[] DEFAULT '{1,2,3}'::smallint[] NOT NULL,
@@ -882,15 +881,15 @@ CREATE VIEW "public"."active_tabulars" AS
 --
 
 CREATE VIEW "public"."active_tables" AS
- SELECT "tabular_id" AS "table_id",
-    "namespace_id",
-    "warehouse_id",
-    "name",
-    "metadata_location",
-    "fs_protocol",
-    "fs_location"
+ SELECT "t"."tabular_id" AS "table_id",
+    "t"."namespace_id",
+    "t"."warehouse_id",
+    "t"."name",
+    "t"."metadata_location",
+    "t"."fs_protocol",
+    "t"."fs_location"
    FROM "public"."active_tabulars" "t"
-  WHERE ("typ" = 'table'::"public"."tabular_type");
+  WHERE ("t"."typ" = 'table'::"public"."tabular_type");
 
 
 --
@@ -898,15 +897,15 @@ CREATE VIEW "public"."active_tables" AS
 --
 
 CREATE VIEW "public"."active_views" AS
- SELECT "tabular_id" AS "view_id",
-    "namespace_id",
-    "warehouse_id",
-    "name",
-    "metadata_location",
-    "fs_protocol",
-    "fs_location"
+ SELECT "t"."tabular_id" AS "view_id",
+    "t"."namespace_id",
+    "t"."warehouse_id",
+    "t"."name",
+    "t"."metadata_location",
+    "t"."fs_protocol",
+    "t"."fs_location"
    FROM "public"."active_tabulars" "t"
-  WHERE ("typ" = 'view'::"public"."tabular_type");
+  WHERE ("t"."typ" = 'view'::"public"."tabular_type");
 
 
 --
@@ -1050,7 +1049,7 @@ CREATE TABLE "public"."project" (
     "project_name" "text" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone,
-    "project_id" "text" CONSTRAINT "project_project_id_text_not_null" NOT NULL,
+    "project_id" "text" NOT NULL,
     "version" bigint DEFAULT 0 NOT NULL
 );
 
@@ -1065,7 +1064,7 @@ CREATE TABLE "public"."role" (
     "description" "text",
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone,
-    "project_id" "text" CONSTRAINT "role_project_id_text_not_null" NOT NULL,
+    "project_id" "text" NOT NULL,
     "source_id" "text" NOT NULL,
     "provider_id" "text" DEFAULT 'lakekeeper'::"text" NOT NULL,
     "version" bigint DEFAULT 0 NOT NULL
@@ -1486,7 +1485,7 @@ CREATE TABLE "public"."tag_definition" (
 CREATE TABLE "public"."task" (
     "task_id" "uuid" NOT NULL,
     "warehouse_id" "uuid",
-    "queue_name" "text" CONSTRAINT "task_task_name_not_null" NOT NULL,
+    "queue_name" "text" NOT NULL,
     "status" "public"."task_intermediate_status" NOT NULL,
     "picked_up_at" timestamp with time zone,
     "scheduled_for" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -3366,5 +3365,5 @@ ALTER TABLE ONLY "public"."warehouse_statistics"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict C1YRCbxKYiRJFHps0z0byJqoJYGLYSdHEo9CYEXqBPutPPhmLF50H3lAaPzK4b3
+\unrestrict JagoEsv55gWHboNSfDK94kXPW0Wqk6EGlnLcHA9YDF2X0ly3YY7WbddFWIb35qW
 

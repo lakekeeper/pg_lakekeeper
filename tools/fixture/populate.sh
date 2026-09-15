@@ -74,8 +74,8 @@ req POST "$mgmt/user" '{"id": "kubernetes~pipeline", "name": "Nightly Pipeline",
 analysts=$(req POST "$mgmt/role" '{"name": "analysts",
     "description": "Reads the sales warehouse"}' | jq -r .id)
 juniors=$(req POST "$mgmt/role" '{"name": "juniors"}' | jq -r .id)
-robots=$(req POST "$mgmt/role" '{"name": "robots",
-    "provider-id": "oidc", "source-id": "group-robots"}' | jq -r .id)
+req POST "$mgmt/role" '{"name": "robots",
+    "provider-id": "oidc", "source-id": "group-robots"}' >/dev/null
 
 req POST "$mgmt/role/$analysts/members" "{\"members\": [
     {\"type\": \"user\", \"id\": \"oidc~alice\"},
@@ -287,13 +287,11 @@ pii=$(req POST "$mgmt/tag-definition" '{"name": "pii", "value-kind": "marker",
     "description": "Carries personally identifiable information",
     "scope": ["warehouse", "namespace", "table", "view", "generic-table", "column"]}' \
     | jq -r .id)
-owner=$(req POST "$mgmt/tag-definition" '{"name": "owner", "value-kind": "free-text",
-    "scope": ["warehouse", "namespace", "table", "view", "generic-table", "column"]}' \
-    | jq -r .id)
-tier=$(req POST "$mgmt/tag-definition" '{"name": "tier", "value-kind": "enumerated",
+req POST "$mgmt/tag-definition" '{"name": "owner", "value-kind": "free-text",
+    "scope": ["warehouse", "namespace", "table", "view", "generic-table", "column"]}' >/dev/null
+req POST "$mgmt/tag-definition" '{"name": "tier", "value-kind": "enumerated",
     "allowed-values": ["bronze", "silver", "gold"],
-    "scope": ["warehouse", "namespace", "table", "view", "generic-table", "column"]}' \
-    | jq -r .id)
+    "scope": ["warehouse", "namespace", "table", "view", "generic-table", "column"]}' >/dev/null
 
 eu_view=$(req GET "$cat/namespaces/$eu/views/eu_orders" | jq -r '.metadata."view-uuid"')
 delta=$(req GET "$gt/namespaces/logs/generic-tables" | jq -r '.identifiers[] | select(.name == "delta_events") | .id')

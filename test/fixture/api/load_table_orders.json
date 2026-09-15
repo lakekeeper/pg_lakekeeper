@@ -8,16 +8,16 @@
     "last-column-id": 11,
     "last-partition-id": 1000,
     "last-sequence-number": 2,
-    "last-updated-ms": 1789500973000,
-    "location": "s3://warehouse/hard/01a0a691-dfb1-7f23-85ed-ad94222cc3a7",
+    "last-updated-ms": 1789501817000,
+    "location": "s3://warehouse/hard/01a0a69e-bfa9-7e62-8c81-d5f0ef4ac744",
     "metadata-log": [
       {
-        "metadata-file": "s3://warehouse/hard/01a0a691-dfb1-7f23-85ed-ad94222cc3a7/metadata/00000-01a0a691-dfb1-7f23-85ed-ada002ec2412.gz.metadata.json",
-        "timestamp-ms": 1789500972977
+        "metadata-file": "s3://warehouse/hard/01a0a69e-bfa9-7e62-8c81-d5f0ef4ac744/metadata/00000-01a0a69e-bfa9-7e62-8c81-d60f3ef8a945.gz.metadata.json",
+        "timestamp-ms": 1789501816745
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a691-dfb1-7f23-85ed-ad94222cc3a7/metadata/00001-01a0a691-e017-79d3-9580-dfd72b1ad459.gz.metadata.json",
-        "timestamp-ms": 1789500972000
+        "metadata-file": "s3://warehouse/hard/01a0a69e-bfa9-7e62-8c81-d5f0ef4ac744/metadata/00001-01a0a69e-c00b-7401-8dfa-5cfc17d9f4c5.gz.metadata.json",
+        "timestamp-ms": 1789501816000
       }
     ],
     "partition-specs": [
@@ -136,30 +136,14 @@
     "snapshot-log": [
       {
         "snapshot-id": 3001,
-        "timestamp-ms": 1789500972000
+        "timestamp-ms": 1789501816000
       },
       {
         "snapshot-id": 3002,
-        "timestamp-ms": 1789500973000
+        "timestamp-ms": 1789501817000
       }
     ],
     "snapshots": [
-      {
-        "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3001.avro",
-        "schema-id": 0,
-        "sequence-number": 1,
-        "snapshot-id": 3001,
-        "summary": {
-          "added-data-files": "2",
-          "added-records": "100",
-          "operation": "append",
-          "total-data-files": "2",
-          "total-delete-files": "0",
-          "total-files-size": "2048",
-          "total-records": "100"
-        },
-        "timestamp-ms": 1789500972000
-      },
       {
         "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3002.avro",
         "parent-snapshot-id": 3001,
@@ -178,7 +162,23 @@
           "total-files-size": "3072",
           "total-records": "150"
         },
-        "timestamp-ms": 1789500973000
+        "timestamp-ms": 1789501817000
+      },
+      {
+        "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3001.avro",
+        "schema-id": 0,
+        "sequence-number": 1,
+        "snapshot-id": 3001,
+        "summary": {
+          "added-data-files": "2",
+          "added-records": "100",
+          "operation": "append",
+          "total-data-files": "2",
+          "total-delete-files": "0",
+          "total-files-size": "2048",
+          "total-records": "100"
+        },
+        "timestamp-ms": 1789501816000
       }
     ],
     "sort-orders": [
@@ -212,7 +212,7 @@
         "statistics-path": "s3://warehouse/hard/sales/eu/orders/metadata/stats-3002.puffin"
       }
     ],
-    "table-uuid": "01a0a691-dfb1-7f23-85ed-ad94222cc3a7"
+    "table-uuid": "01a0a69e-bfa9-7e62-8c81-d5f0ef4ac744"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a691-dfb1-7f23-85ed-ad94222cc3a7/metadata/00002-01a0a691-e04e-7931-83d6-99ada2412998.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a69e-bfa9-7e62-8c81-d5f0ef4ac744/metadata/00002-01a0a69e-c03e-7731-9322-fe6b674a9a5a.gz.metadata.json"
 }

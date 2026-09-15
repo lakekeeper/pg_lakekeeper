@@ -2,11 +2,23 @@
   "metadata": {
     "current-version-id": 2,
     "format-version": 1,
-    "location": "s3://warehouse/hard/01a0a691-e169-7470-913f-d1add9c6715c",
+    "location": "s3://warehouse/hard/01a0a69e-c150-7c70-aa5e-0c24b81190e7",
     "properties": {
       "owner": "analytics"
     },
     "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      },
       {
         "fields": [
           {
@@ -24,27 +36,15 @@
         ],
         "schema-id": 0,
         "type": "struct"
-      },
-      {
-        "fields": [
-          {
-            "id": 1,
-            "name": "order_id",
-            "required": true,
-            "type": "long"
-          }
-        ],
-        "schema-id": 1,
-        "type": "struct"
       }
     ],
     "version-log": [
       {
-        "timestamp-ms": 1789500973417,
+        "timestamp-ms": 1789501817168,
         "version-id": 1
       },
       {
-        "timestamp-ms": 1789500972000,
+        "timestamp-ms": 1789501816000,
         "version-id": 2
       }
     ],
@@ -70,7 +70,7 @@
         "summary": {
           "engine-name": "fixture"
         },
-        "timestamp-ms": 1789500972000,
+        "timestamp-ms": 1789501816000,
         "version-id": 2
       },
       {
@@ -94,11 +94,11 @@
         "summary": {
           "engine-name": "fixture"
         },
-        "timestamp-ms": 1789500973417,
+        "timestamp-ms": 1789501817168,
         "version-id": 1
       }
     ],
-    "view-uuid": "01a0a691-e169-7470-913f-d1add9c6715c"
+    "view-uuid": "01a0a69e-c150-7c70-aa5e-0c24b81190e7"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a691-e169-7470-913f-d1add9c6715c/metadata/00001-01a0a691-e190-7551-bd68-ae14c9eda190.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a69e-c150-7c70-aa5e-0c24b81190e7/metadata/00001-01a0a69e-c178-7022-a49b-213c31d9f9a7.gz.metadata.json"
 }

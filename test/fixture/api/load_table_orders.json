@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "current-schema-id": 0,
+    "current-snapshot-id": 3002,
+    "default-sort-order-id": 1,
+    "default-spec-id": 0,
+    "format-version": 2,
+    "last-column-id": 11,
+    "last-partition-id": 1000,
+    "last-sequence-number": 2,
+    "last-updated-ms": 1789500275000,
+    "location": "s3://warehouse/hard/01a0a687-3709-7340-86da-ce781af16e68",
+    "metadata-log": [
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a687-3709-7340-86da-ce781af16e68/metadata/00000-01a0a687-3709-7340-86da-ce8258c93d05.gz.metadata.json",
+        "timestamp-ms": 1789500274441
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a687-3709-7340-86da-ce781af16e68/metadata/00001-01a0a687-376e-71c0-a3c4-f406c4e36971.gz.metadata.json",
+        "timestamp-ms": 1789500274000
+      }
+    ],
+    "partition-specs": [
+      {
+        "fields": [
+          {
+            "field-id": 1000,
+            "name": "placed_at_day",
+            "source-id": 2,
+            "transform": "day"
+          }
+        ],
+        "spec-id": 0
+      }
+    ],
+    "partition-statistics": [
+      {
+        "file-size-in-bytes": 512,
+        "snapshot-id": 3002,
+        "statistics-path": "s3://warehouse/hard/sales/eu/orders/metadata/part-stats-3002.parquet"
+      }
+    ],
+    "properties": {
+      "owner": "analytics",
+      "write.format.default": "parquet"
+    },
+    "refs": {
+      "main": {
+        "max-snapshot-age-ms": 604800000,
+        "min-snapshots-to-keep": 2,
+        "snapshot-id": 3002,
+        "type": "branch"
+      },
+      "release": {
+        "max-ref-age-ms": 2592000000,
+        "snapshot-id": 3001,
+        "type": "tag"
+      }
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "doc": "Order number",
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "placed_at",
+            "required": true,
+            "type": "timestamptz"
+          },
+          {
+            "id": 3,
+            "name": "amount",
+            "required": false,
+            "type": "decimal(12, 2)"
+          },
+          {
+            "id": 4,
+            "name": "customer",
+            "required": false,
+            "type": {
+              "fields": [
+                {
+                  "id": 7,
+                  "name": "customer_id",
+                  "required": true,
+                  "type": "uuid"
+                },
+                {
+                  "id": 8,
+                  "name": "display_name",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "type": "struct"
+            }
+          },
+          {
+            "id": 5,
+            "name": "items",
+            "required": false,
+            "type": {
+              "element": "string",
+              "element-id": 9,
+              "element-required": true,
+              "type": "list"
+            }
+          },
+          {
+            "id": 6,
+            "name": "scores",
+            "required": false,
+            "type": {
+              "key": "string",
+              "key-id": 10,
+              "type": "map",
+              "value": "double",
+              "value-id": 11,
+              "value-required": false
+            }
+          }
+        ],
+        "identifier-field-ids": [
+          1
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "snapshot-log": [
+      {
+        "snapshot-id": 3001,
+        "timestamp-ms": 1789500274000
+      },
+      {
+        "snapshot-id": 3002,
+        "timestamp-ms": 1789500275000
+      }
+    ],
+    "snapshots": [
+      {
+        "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3001.avro",
+        "schema-id": 0,
+        "sequence-number": 1,
+        "snapshot-id": 3001,
+        "summary": {
+          "added-data-files": "2",
+          "added-records": "100",
+          "operation": "append",
+          "total-data-files": "2",
+          "total-delete-files": "0",
+          "total-files-size": "2048",
+          "total-records": "100"
+        },
+        "timestamp-ms": 1789500274000
+      },
+      {
+        "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3002.avro",
+        "parent-snapshot-id": 3001,
+        "schema-id": 0,
+        "sequence-number": 2,
+        "snapshot-id": 3002,
+        "summary": {
+          "added-data-files": "1",
+          "added-records": "50",
+          "deleted-data-files": "0",
+          "deleted-records": "0",
+          "operation": "append",
+          "removed-files-size": "0",
+          "total-data-files": "3",
+          "total-delete-files": "0",
+          "total-files-size": "3072",
+          "total-records": "150"
+        },
+        "timestamp-ms": 1789500275000
+      }
+    ],
+    "sort-orders": [
+      {
+        "fields": [
+          {
+            "direction": "asc",
+            "null-order": "nulls-first",
+            "source-id": 1,
+            "transform": "identity"
+          }
+        ],
+        "order-id": 1
+      }
+    ],
+    "statistics": [
+      {
+        "blob-metadata": [
+          {
+            "fields": [
+              1
+            ],
+            "sequence-number": 2,
+            "snapshot-id": 3002,
+            "type": "apache-datasketches-theta-v1"
+          }
+        ],
+        "file-footer-size-in-bytes": 64,
+        "file-size-in-bytes": 1024,
+        "snapshot-id": 3002,
+        "statistics-path": "s3://warehouse/hard/sales/eu/orders/metadata/stats-3002.puffin"
+      }
+    ],
+    "table-uuid": "01a0a687-3709-7340-86da-ce781af16e68"
+  },
+  "metadata-location": "s3://warehouse/hard/01a0a687-3709-7340-86da-ce781af16e68/metadata/00002-01a0a687-37a1-7561-83c3-a55448aa642a.gz.metadata.json"
+}

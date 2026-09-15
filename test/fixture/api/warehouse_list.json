@@ -1,0 +1,93 @@
+{
+  "warehouses": [
+    {
+      "allowed-format-versions": [
+        1,
+        2,
+        3
+      ],
+      "delete-profile": {
+        "type": "hard"
+      },
+      "id": "01a0a687-35f4-7dc3-9043-216b1fe4b387",
+      "managed-by": "self-managed",
+      "name": "wh_hard",
+      "project-id": "00000000-0000-0000-0000-000000000000",
+      "protected": false,
+      "status": "active",
+      "storage-credential-type": {
+        "credential-type": "access-key",
+        "type": "s3"
+      },
+      "storage-profile": {
+        "allow-alternative-protocols": null,
+        "assume-role-arn": null,
+        "aws-kms-key-arn": null,
+        "bucket": "warehouse",
+        "endpoint": "http://minio:9000/",
+        "flavor": "s3-compat",
+        "key-prefix": "hard",
+        "legacy-md5-behavior": null,
+        "path-style-access": true,
+        "push-s3-delete-disabled": true,
+        "region": "local-01",
+        "remote-signing-enabled": true,
+        "remote-signing-url-style": "auto",
+        "storage-layout": null,
+        "sts-enabled": true,
+        "sts-endpoint": null,
+        "sts-role-arn": null,
+        "sts-session-tags": {},
+        "sts-token-validity-seconds": 3600,
+        "type": "s3"
+      },
+      "updated-at": null,
+      "warehouse-id": "01a0a687-35f4-7dc3-9043-216b1fe4b387"
+    },
+    {
+      "allowed-format-versions": [
+        1,
+        2,
+        3
+      ],
+      "delete-profile": {
+        "expiration-seconds": 86400,
+        "type": "soft"
+      },
+      "id": "01a0a687-3625-7ae1-a8a7-0f13add8ea74",
+      "managed-by": "self-managed",
+      "name": "wh_soft",
+      "project-id": "00000000-0000-0000-0000-000000000000",
+      "protected": true,
+      "status": "active",
+      "storage-credential-type": {
+        "credential-type": "access-key",
+        "type": "s3"
+      },
+      "storage-profile": {
+        "allow-alternative-protocols": null,
+        "assume-role-arn": null,
+        "aws-kms-key-arn": null,
+        "bucket": "warehouse",
+        "endpoint": "http://minio:9000/",
+        "flavor": "s3-compat",
+        "key-prefix": "soft",
+        "legacy-md5-behavior": null,
+        "path-style-access": true,
+        "push-s3-delete-disabled": true,
+        "region": "local-01",
+        "remote-signing-enabled": true,
+        "remote-signing-url-style": "auto",
+        "storage-layout": null,
+        "sts-enabled": true,
+        "sts-endpoint": null,
+        "sts-role-arn": null,
+        "sts-session-tags": {},
+        "sts-token-validity-seconds": 3600,
+        "type": "s3"
+      },
+      "updated-at": "2026-09-15T19:24:34.337931Z",
+      "warehouse-id": "01a0a687-3625-7ae1-a8a7-0f13add8ea74"
+    }
+  ]
+}

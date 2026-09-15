@@ -1,0 +1,38 @@
+{
+  "next-page-token": "MSYxNzg5NTAwMjc0MTA1MTIzJjAxYTBhNjg3LTM1YjktNzI5Mi04Mjc5LWVkMjFkNzRkNGM1Mg",
+  "roles": [
+    {
+      "created-at": "2026-09-15T19:24:34.076268Z",
+      "description": "Reads the sales warehouse",
+      "id": "01a0a687-359c-7c50-a6cb-3c0535628def",
+      "ident": "lakekeeper~01a0a687-359c-7c50-a6cb-3c0535628def",
+      "name": "analysts",
+      "project-id": "00000000-0000-0000-0000-000000000000",
+      "provider-id": "lakekeeper",
+      "source-id": "01a0a687-359c-7c50-a6cb-3c0535628def",
+      "updated-at": null
+    },
+    {
+      "created-at": "2026-09-15T19:24:34.091111Z",
+      "description": null,
+      "id": "01a0a687-35ab-7a62-a16b-8aedc712166f",
+      "ident": "lakekeeper~01a0a687-35ab-7a62-a16b-8aedc712166f",
+      "name": "juniors",
+      "project-id": "00000000-0000-0000-0000-000000000000",
+      "provider-id": "lakekeeper",
+      "source-id": "01a0a687-35ab-7a62-a16b-8aedc712166f",
+      "updated-at": null
+    },
+    {
+      "created-at": "2026-09-15T19:24:34.105123Z",
+      "description": null,
+      "id": "01a0a687-35b9-7292-8279-ed21d74d4c52",
+      "ident": "oidc~group-robots",
+      "name": "robots",
+      "project-id": "00000000-0000-0000-0000-000000000000",
+      "provider-id": "oidc",
+      "source-id": "group-robots",
+      "updated-at": null
+    }
+  ]
+}

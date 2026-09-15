@@ -1,0 +1,5 @@
+CLAUDE.local.md
+pg_lakekeeper--*.sql
+test/results/
+test/regression.diffs
+test/regression.out

@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "current-version-id": 2,
+    "format-version": 1,
+    "location": "s3://warehouse/hard/01a0a687-3883-7a22-8d29-04bca56028f7",
+    "properties": {
+      "owner": "analytics"
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "amount",
+            "required": false,
+            "type": "decimal(12, 2)"
+          }
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "version-log": [
+      {
+        "timestamp-ms": 1789500274820,
+        "version-id": 1
+      },
+      {
+        "timestamp-ms": 1789500274000,
+        "version-id": 2
+      }
+    ],
+    "versions": [
+      {
+        "default-namespace": [
+          "sales",
+          "eu"
+        ],
+        "representations": [
+          {
+            "dialect": "spark",
+            "sql": "SELECT order_id, amount FROM orders",
+            "type": "sql"
+          },
+          {
+            "dialect": "trino",
+            "sql": "SELECT order_id, amount FROM orders",
+            "type": "sql"
+          }
+        ],
+        "schema-id": 0,
+        "summary": {
+          "engine-name": "fixture"
+        },
+        "timestamp-ms": 1789500274820,
+        "version-id": 1
+      },
+      {
+        "default-namespace": [
+          "sales",
+          "eu"
+        ],
+        "representations": [
+          {
+            "dialect": "spark",
+            "sql": "SELECT order_id FROM orders",
+            "type": "sql"
+          },
+          {
+            "dialect": "trino",
+            "sql": "SELECT order_id FROM orders",
+            "type": "sql"
+          }
+        ],
+        "schema-id": 1,
+        "summary": {
+          "engine-name": "fixture"
+        },
+        "timestamp-ms": 1789500274000,
+        "version-id": 2
+      }
+    ],
+    "view-uuid": "01a0a687-3883-7a22-8d29-04bca56028f7"
+  },
+  "metadata-location": "s3://warehouse/hard/01a0a687-3883-7a22-8d29-04bca56028f7/metadata/00001-01a0a687-38ab-7951-ab9c-d21213da765d.gz.metadata.json"
+}

@@ -1,0 +1,23 @@
+{
+  "next-page-token": "MSYxNzg5NTAwMjc0MDYxMDIyJmt1YmVybmV0ZXN-cGlwZWxpbmU",
+  "users": [
+    {
+      "created-at": "2026-09-15T19:24:34.045901Z",
+      "email": "alice@example.invalid",
+      "id": "oidc~alice",
+      "last-updated-with": "create-endpoint",
+      "name": "Alice Analyst",
+      "updated-at": null,
+      "user-type": "human"
+    },
+    {
+      "created-at": "2026-09-15T19:24:34.061022Z",
+      "email": null,
+      "id": "kubernetes~pipeline",
+      "last-updated-with": "create-endpoint",
+      "name": "Nightly Pipeline",
+      "updated-at": null,
+      "user-type": "application"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "grants": [
+    {
+      "created-at": "2026-09-15T19:24:35.132294Z",
+      "principal": {
+        "role": "01a0a687-359c-7c50-a6cb-3c0535628def"
+      },
+      "privilege": "use",
+      "recognized": true,
+      "resource": {
+        "type": "warehouse",
+        "warehouse-id": "01a0a687-35f4-7dc3-9043-216b1fe4b387"
+      }
+    }
+  ],
+  "next-page-token": "MSYxNzg5NTAwMjc1MTMyMjk0JjE1YzEwMzBhLWIxM2ItMTFmMS1hZDU3LTU3NmExOGYwYTJhNg"
+}

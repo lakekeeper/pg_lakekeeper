@@ -1,0 +1,11 @@
+{
+  "identifiers": [
+    {
+      "name": "eu_orders",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
+    }
+  ]
+}

@@ -55,3 +55,5 @@ $$;
 
 COMMENT ON FUNCTION pgl_test.json_canonical(jsonb) IS
     'Sorts every array in a document, so two documents compare equal when they differ only in array order.';
+
+GRANT USAGE ON SCHEMA pgl_test TO PUBLIC;

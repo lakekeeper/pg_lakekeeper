@@ -11,12 +11,13 @@ SQL_SRC = \
 	sql/110_namespace.sql \
 	sql/120_tabular.sql \
 	sql/130_table.sql \
+	sql/140_schema.sql \
 	sql/900_cleanup.sql
 
 DATA_built  = $(EXTENSION)--$(EXTVERSION).sql
 EXTRA_CLEAN = $(EXTENSION)--$(EXTVERSION).sql
 
-REGRESS      = 00_meta 10_warehouse 20_tabular 30_table
+REGRESS      = 00_meta 10_warehouse 20_tabular 30_table 40_schema
 REGRESS_OPTS = --inputdir=test --outputdir=test --use-existing
 
 PG_CONFIG ?= pg_config

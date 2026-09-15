@@ -27,6 +27,15 @@ for f in test/fixture/schema.sql test/fixture/data.sql; do
 done
 psql -v ON_ERROR_STOP=1 -d contrib_regression -c 'CREATE EXTENSION pg_lakekeeper'
 psql -v ON_ERROR_STOP=1 -q -d contrib_regression -f test/helper/pgl_test.sql
+for f in test/fixture/api/*.json; do
+    [ -f "$f" ] || continue
+    name=$(basename "$f" .json)
+    {
+        printf "INSERT INTO pgl_test.api VALUES ('%s', \$json\$" "$name"
+        cat "$f"
+        printf "\$json\$::jsonb);\n"
+    } | psql -v ON_ERROR_STOP=1 -q -d contrib_regression -f -
+done
 
 if ! make installcheck; then
     [ -f test/regression.diffs ] && cat test/regression.diffs

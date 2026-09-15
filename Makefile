@@ -7,12 +7,14 @@ SQL_SRC = \
 	sql/005_pin.sql \
 	sql/010_bind.sql \
 	sql/020_meta.sql \
+	sql/100_warehouse.sql \
+	sql/110_namespace.sql \
 	sql/900_cleanup.sql
 
 DATA_built  = $(EXTENSION)--$(EXTVERSION).sql
 EXTRA_CLEAN = $(EXTENSION)--$(EXTVERSION).sql
 
-REGRESS      = 00_meta
+REGRESS      = 00_meta 10_warehouse
 REGRESS_OPTS = --inputdir=test --outputdir=test --use-existing
 
 PG_CONFIG ?= pg_config

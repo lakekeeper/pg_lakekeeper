@@ -2,10 +2,11 @@
 
 **Run the Lakekeeper Iceberg REST Catalog natively inside PostgreSQL.**
 
-> [!WARNING]
-> **Status: design phase. There is no working code yet.**
-> This repository exists to scope the project in the open and find collaborators.
-> Interfaces, architecture, and scope described below are proposals, not commitments.
+> [!NOTE]
+> **Status: Phase 1 is implemented and unreleased.** The read-only SQL interface
+> below works and is tested against a live Lakekeeper catalog. There is no tagged
+> release yet, so column names and function signatures can still change. Phases 2
+> and 3 are proposals.
 > If you want to shape them, now is the time: see [Getting involved](#getting-involved).
 
 ---
@@ -52,12 +53,102 @@ service to deploy, monitor, or upgrade.
   that is a different meaning of the word "extension" and this project is not one of them.
   We will keep the terminology distinct in docs.
 
+## Install
+
+Phase 1 is pure SQL. Build it and install it into the PostgreSQL instance that
+hosts Lakekeeper's database (the `make install` step writes into PostgreSQL's
+extension directory and needs permission to do so):
+
+```sh
+make
+make install
+psql -d lakekeeper -c 'CREATE EXTENSION pg_lakekeeper'
+```
+
+On managed PostgreSQL, where an extension cannot be installed, the same objects
+come from a single script:
+
+```sh
+make standalone
+psql -d lakekeeper -f pg_lakekeeper-standalone.sql
+```
+
+If Lakekeeper runs with `LAKEKEEPER__PG_SCHEMA` set, tell the extension the same
+schema before installing it:
+
+```sql
+ALTER DATABASE lakekeeper SET pg_lakekeeper.lakekeeper_schema = 'lk_catalog';
+```
+
+`SELECT * FROM lakekeeper.check_schema()` reports what the installation is bound
+to and whether the database still matches the upstream build the extension was
+written against.
+
+## Using it
+
+Everything is a view or a function in the `lakekeeper` schema. Reading a view
+takes your own `SELECT` privilege on Lakekeeper's tables.
+
+```sql
+-- Live tables and views, with their namespace path.
+SELECT w.warehouse_name, t.full_name, t.typ, t.location
+FROM lakekeeper.tabular t
+JOIN lakekeeper.warehouse w USING (warehouse_id)
+WHERE t.is_live
+ORDER BY 1, 2;
+
+-- What the current snapshot of a table holds.
+SELECT t.full_name, s.total_records, s.total_data_files, s.total_files_size
+FROM lakekeeper.iceberg_table t
+JOIN lakekeeper.table_snapshot s
+  ON s.warehouse_id = t.warehouse_id
+ AND s.table_id = t.table_id
+ AND s.snapshot_id = t.current_snapshot_id;
+
+-- Columns carrying a tag, across every table in the catalog.
+SELECT t.full_name, f.name AS column_name, g.tag_name, g.value
+FROM lakekeeper.tag g
+JOIN lakekeeper.iceberg_table t
+  ON t.warehouse_id = g.warehouse_id
+ AND t.table_id = g.tabular_id
+JOIN lakekeeper.field f
+  ON f.warehouse_id = t.warehouse_id
+ AND f.tabular_id = t.table_id
+ AND f.schema_id = t.current_schema_id
+ AND f.field_id = g.field_id
+WHERE g.target_type = 'column';
+
+-- The document the catalog would serve for one table.
+SELECT jsonb_pretty(lakekeeper.load_table(
+    (SELECT warehouse_id FROM lakekeeper.warehouse WHERE warehouse_name = 'demo'),
+    ARRAY['sales', 'eu'], 'orders'));
+```
+
+Names come back under the database default collation, so `LIKE` and `ILIKE` work
+on them and equality is case-sensitive. `load_table()` and `load_view()` match
+names the way the catalog does, ignoring case.
+
+Full description of the objects and how they are put together:
+[ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Backup and restore
+
+Nothing extra. `pg_dump` and `pg_restore` of the Lakekeeper database carry the
+extension with it, and the restore needs no manual step. A deployment using a
+named schema sets `pg_lakekeeper.lakekeeper_schema` at server, database or role
+level, so the setting is in effect when the restoring session connects.
+
+Upstream schema migrations are never blocked by this extension: upgrade
+Lakekeeper as you normally would. After an upgrade,
+`SELECT * FROM lakekeeper.check_schema()` says whether the installed extension
+still matches the database.
+
 ## Proposed scope
 
 Three phases, ordered so that something useful ships early. **Phase boundaries are open
 for discussion**: if you think this is the wrong split, open an issue.
 
-### Phase 1: Read-only SQL catalog access
+### Phase 1: Read-only SQL catalog access (implemented)
 
 A pure-SQL extension installed into the database that a standalone Lakekeeper service
 already uses. The service keeps running unchanged and continues to handle all writes and

@@ -15,27 +15,17 @@ dropdb --if-exists pgl_empty
 createdb pgl_empty
 psql -v ON_ERROR_STOP=1 -d pgl_empty -c 'CREATE EXTENSION pg_lakekeeper'
 
+echo '--- standalone script, for a server that cannot install an extension ---'
+make standalone
+dropdb --if-exists pgl_standalone
+createdb pgl_standalone
+psql -v ON_ERROR_STOP=1 -q -d pgl_standalone -f test/fixture/schema.sql
+psql -v ON_ERROR_STOP=1 -q -d pgl_standalone -f test/fixture/data.sql
+psql -v ON_ERROR_STOP=1 -q -d pgl_standalone -f pg_lakekeeper-standalone.sql
+psql -v ON_ERROR_STOP=1 -d pgl_standalone -c 'SELECT count(*) FROM lakekeeper.warehouse'
+
 echo '--- regression suite ---'
-dropdb --if-exists contrib_regression
-createdb contrib_regression
-if [ -n "${LAKEKEEPER_SCHEMA:-}" ]; then
-    psql -v ON_ERROR_STOP=1 -d contrib_regression \
-        -c "ALTER DATABASE contrib_regression SET pg_lakekeeper.lakekeeper_schema = '$LAKEKEEPER_SCHEMA'"
-fi
-for f in test/fixture/schema.sql test/fixture/data.sql; do
-    [ -f "$f" ] && psql -v ON_ERROR_STOP=1 -q -d contrib_regression -f "$f"
-done
-psql -v ON_ERROR_STOP=1 -d contrib_regression -c 'CREATE EXTENSION pg_lakekeeper'
-psql -v ON_ERROR_STOP=1 -q -d contrib_regression -f test/helper/pgl_test.sql
-for f in test/fixture/api/*.json; do
-    [ -f "$f" ] || continue
-    name=$(basename "$f" .json)
-    {
-        printf "INSERT INTO pgl_test.api VALUES ('%s', \$json\$" "$name"
-        cat "$f"
-        printf "\$json\$::jsonb);\n"
-    } | psql -v ON_ERROR_STOP=1 -q -d contrib_regression -f -
-done
+ci/load-db.sh contrib_regression
 
 if ! make installcheck; then
     [ -f test/regression.diffs ] && cat test/regression.diffs

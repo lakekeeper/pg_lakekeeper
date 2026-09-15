@@ -4,7 +4,8 @@
 set -eu
 
 pg=${1:-18}
-root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+inside=${2:-/src/ci/inside.sh}
+root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 image=pg-lakekeeper-test:$pg
 container=pg-lakekeeper-test-$pg
 
@@ -25,7 +26,7 @@ until docker exec "$container" pg_isready -U postgres -q 2>/dev/null; do
 done
 
 status=0
-docker exec -e "LAKEKEEPER_SCHEMA=${LAKEKEEPER_SCHEMA:-}" "$container" /src/ci/inside.sh || status=$?
+docker exec -e "LAKEKEEPER_SCHEMA=${LAKEKEEPER_SCHEMA:-}" "$container" "$inside" || status=$?
 
 # pg_regress writes its results inside the container; bring them back so a
 # failing run can be read, and so expected files can be refreshed from them.

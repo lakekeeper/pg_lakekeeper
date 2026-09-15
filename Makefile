@@ -23,7 +23,8 @@ SQL_SRC = \
 	sql/900_cleanup.sql
 
 DATA_built  = $(EXTENSION)--$(EXTVERSION).sql
-EXTRA_CLEAN = $(EXTENSION)--$(EXTVERSION).sql
+STANDALONE  = $(EXTENSION)-standalone.sql
+EXTRA_CLEAN = $(EXTENSION)--$(EXTVERSION).sql $(STANDALONE)
 
 REGRESS      = 00_meta 01_contract 10_warehouse 20_tabular 30_table 40_schema 50_view 60_generic_table 70_identity 80_grant 90_tag A0_schema_json B0_table_metadata C0_view_metadata D0_privileges
 REGRESS_OPTS = --inputdir=test --outputdir=test --use-existing
@@ -35,7 +36,19 @@ include $(PGXS)
 $(EXTENSION)--$(EXTVERSION).sql: $(SQL_SRC)
 	cat $(SQL_SRC) > $@
 
+# A single script for a server where an extension cannot be installed.
+standalone: $(STANDALONE)
+
+$(STANDALONE): $(EXTENSION)--$(EXTVERSION).sql
+	{ \
+	  echo 'BEGIN;'; \
+	  echo 'CREATE SCHEMA IF NOT EXISTS lakekeeper;'; \
+	  echo 'SET LOCAL check_function_bodies = off;'; \
+	  sed -e '/^\\echo/d' -e 's/@extschema@/lakekeeper/g' $<; \
+	  echo 'COMMIT;'; \
+	} > $@
+
 repin:
 	tools/repin.sh
 
-.PHONY: repin
+.PHONY: repin standalone

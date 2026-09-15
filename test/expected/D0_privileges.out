@@ -2,8 +2,13 @@
 -- extension owner's.
 CREATE ROLE pgl_reader;
 SET ROLE pgl_reader;
-SELECT count(*) FROM lakekeeper.warehouse;
-ERROR:  permission denied for table warehouse
+DO $$
+BEGIN
+    PERFORM count(*) FROM lakekeeper.warehouse;
+    RAISE EXCEPTION 'ASSERTION FAILED: an ungranted role read the warehouse view';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
 RESET ROLE;
 DO $$
 DECLARE
@@ -21,8 +26,13 @@ SELECT pgl_test.ok(
  
 (1 row)
 
-SELECT count(*) FROM lakekeeper.namespace;
-ERROR:  permission denied for table namespace
+DO $$
+BEGIN
+    PERFORM count(*) FROM lakekeeper.namespace;
+    RAISE EXCEPTION 'ASSERTION FAILED: the grant reached a table it did not name';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
 RESET ROLE;
 DROP OWNED BY pgl_reader;
 DROP ROLE pgl_reader;

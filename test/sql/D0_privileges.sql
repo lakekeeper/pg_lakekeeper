@@ -4,7 +4,13 @@
 CREATE ROLE pgl_reader;
 
 SET ROLE pgl_reader;
-SELECT count(*) FROM lakekeeper.warehouse;
+DO $$
+BEGIN
+    PERFORM count(*) FROM lakekeeper.warehouse;
+    RAISE EXCEPTION 'ASSERTION FAILED: an ungranted role read the warehouse view';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
 RESET ROLE;
 
 DO $$
@@ -21,7 +27,13 @@ SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.warehouse) = 3,
     'a role granted the upstream table reads the view');
 
-SELECT count(*) FROM lakekeeper.namespace;
+DO $$
+BEGIN
+    PERFORM count(*) FROM lakekeeper.namespace;
+    RAISE EXCEPTION 'ASSERTION FAILED: the grant reached a table it did not name';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
 
 RESET ROLE;
 DROP OWNED BY pgl_reader;

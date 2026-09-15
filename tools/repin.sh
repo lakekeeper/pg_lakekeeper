@@ -2,7 +2,7 @@
 # Regenerates sql/005_pin.sql from the pinned upstream image.
 set -eu
 
-root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 env_file=$root/tools/fixture/upstream.env
 # shellcheck source=tools/fixture/upstream.env
 . "$env_file"

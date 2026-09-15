@@ -1,0 +1,4 @@
+comment = 'Read-only SQL interface to a Lakekeeper Iceberg REST catalog'
+default_version = '0.1'
+relocatable = false
+schema = 'lakekeeper'

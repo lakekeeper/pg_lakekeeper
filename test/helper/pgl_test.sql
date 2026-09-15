@@ -34,3 +34,24 @@ CREATE TABLE IF NOT EXISTS pgl_test.api (name text PRIMARY KEY, body jsonb NOT N
 
 COMMENT ON TABLE pgl_test.api IS
     'REST responses captured from the upstream build the fixture was generated on.';
+
+CREATE OR REPLACE FUNCTION pgl_test.json_canonical(j jsonb) RETURNS jsonb
+LANGUAGE plpgsql IMMUTABLE AS $$
+DECLARE
+    out jsonb;
+BEGIN
+    IF jsonb_typeof(j) = 'array' THEN
+        SELECT coalesce(jsonb_agg(e ORDER BY e::text), '[]'::jsonb) INTO out
+        FROM (SELECT pgl_test.json_canonical(x) AS e FROM jsonb_array_elements(j) x) s;
+        RETURN out;
+    ELSIF jsonb_typeof(j) = 'object' THEN
+        SELECT coalesce(jsonb_object_agg(k, pgl_test.json_canonical(v)), '{}'::jsonb) INTO out
+        FROM jsonb_each(j) AS e(k, v);
+        RETURN out;
+    END IF;
+    RETURN j;
+END
+$$;
+
+COMMENT ON FUNCTION pgl_test.json_canonical(jsonb) IS
+    'Sorts every array in a document, so two documents compare equal when they differ only in array order.';

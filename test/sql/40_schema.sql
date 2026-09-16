@@ -25,9 +25,12 @@ SELECT pgl_test.ok(
     'a decimal renders with its precision and scale');
 
 SELECT pgl_test.ok(
-    (SELECT count(*) FROM lakekeeper.field WHERE node_role = 'element') = 1
-    AND (SELECT count(*) FROM lakekeeper.field WHERE node_role = 'key') = 1
-    AND (SELECT count(*) FROM lakekeeper.field WHERE node_role = 'value') = 1,
+    (SELECT array_agg(f.node_role ORDER BY f.field_id)
+     FROM lakekeeper.field f
+     JOIN lakekeeper.tabular t ON t.warehouse_id = f.warehouse_id
+                              AND t.tabular_id = f.tabular_id
+     WHERE t.full_name = 'sales.eu.orders' AND f.parent_field_id IS NOT NULL)
+    = ARRAY['field', 'field', 'element', 'key', 'value'],
     'list elements and map keys and values are labelled by their parent');
 
 SELECT pgl_test.ok(
@@ -41,7 +44,7 @@ SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.field f
      JOIN lakekeeper.tabular t ON t.warehouse_id = f.warehouse_id
                               AND t.tabular_id = f.tabular_id
-     WHERE t.typ = 'view') = 3,
+     WHERE t.full_name = 'sales.eu.eu_orders') = 3,
     'view schemas carry fields too');
 
 SELECT lakekeeper.iceberg_type_name('fixed', '{"length": 16}'::jsonb),

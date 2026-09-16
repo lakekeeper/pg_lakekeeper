@@ -70,10 +70,11 @@ ORDER BY full_name;
  logs.encrypted_v3  |              3 |                 0 |                         0 |                     0 |                     |              1 |               999 |                    0 |           0 | t
  logs.events        |              2 |                 0 |                         0 |                     0 |                     |              2 |               999 |                    0 |           0 | t
  logs.legacy_v1     |              1 |                 0 |                         0 |                     0 |                     |              1 |               999 |                    0 |           0 | t
+ sales.eu.evolved   |              3 |                 1 |                         1 |                     2 |                5003 |             20 |              1003 |                    3 |         140 | t
  sales.eu.orders    |              2 |                 0 |                         0 |                     1 |                3002 |             11 |              1000 |                    2 |           0 | t
  sales.eu.orders_v3 |              3 |                 0 |                         0 |                     0 |                4002 |              2 |               999 |                    2 |          35 | t
  staging.retired    |              2 |                 0 |                         0 |                     0 |                     |              1 |               999 |                    0 |           0 | f
-(7 rows)
+(8 rows)
 
 SELECT pgl_test.ok(
     (SELECT current_snapshot_id FROM lakekeeper.iceberg_table
@@ -88,11 +89,13 @@ SELECT t.full_name, p.key, p.value
 FROM lakekeeper.table_property p
 JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
 ORDER BY t.full_name, p.key;
-    full_name    |         key          |   value   
------------------+----------------------+-----------
- sales.eu.orders | owner                | analytics
- sales.eu.orders | write.format.default | parquet
-(2 rows)
+    full_name     |         key          |     value     
+------------------+----------------------+---------------
+ sales.eu.evolved | comment              | has a history
+ sales.eu.evolved | owner                | platform
+ sales.eu.orders  | owner                | analytics
+ sales.eu.orders  | write.format.default | parquet
+(4 rows)
 
 SELECT s.snapshot_id, s.parent_snapshot_id, s.sequence_number, s.operation,
        s.added_data_files, s.deleted_data_files, s.total_data_files,
@@ -106,7 +109,9 @@ ORDER BY s.snapshot_id;
         3002 |               3001 |               2 | append    |                1 |                  0 |                3 |                  0 |            50 |               0 |           150 |                  |                  0 |             3072
         4001 |                    |               1 | append    |                1 |                    |                1 |                  0 |            25 |                 |            25 |                  |                    |              512
         4002 |               4001 |               2 | append    |                1 |                    |                2 |                  0 |            10 |                 |            35 |                  |                    |             1024
-(4 rows)
+        5002 |               5001 |               2 | overwrite |                2 |                  1 |                5 |                  0 |            40 |              25 |           115 |             2048 |               1024 |             5120
+        5003 |               5002 |               3 | delete    |                  |                    |                5 |                  1 |               |               5 |           110 |                  |                    |             5376
+(6 rows)
 
 SELECT r.ref_name, r.ref_type, r.snapshot_id, r.min_snapshots_to_keep,
        r.max_snapshot_age_ms, r.max_ref_age_ms
@@ -116,8 +121,9 @@ ORDER BY r.ref_name;
 ----------+----------+-------------+-----------------------+---------------------+----------------
  main     | branch   |        3002 |                     2 |           604800000 |               
  main     | branch   |        4002 |                       |                     |               
+ main     | branch   |        5003 |                       |                     |               
  release  | tag      |        3001 |                       |                     |     2592000000
-(3 rows)
+(4 rows)
 
 SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.table_snapshot_log l
@@ -143,7 +149,9 @@ ORDER BY s.snapshot_id;
 --------------------+-------------+--------------+---------------+---------------
  sales.eu.orders_v3 |        4001 |            0 |            25 | 
  sales.eu.orders_v3 |        4002 |           25 |            10 | fixture-key-1
-(2 rows)
+ sales.eu.evolved   |        5002 |          100 |            40 | 
+ sales.eu.evolved   |        5003 |          140 |             0 | 
+(4 rows)
 
 SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.table_snapshot s
@@ -160,16 +168,20 @@ SELECT t.full_name, f.partition_spec_id, f.ordinal, f.field_id, f.source_id,
 FROM lakekeeper.table_partition_field f
 JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
 ORDER BY t.full_name, f.ordinal NULLS FIRST;
-     full_name      | partition_spec_id | ordinal | field_id | source_id |     name      | transform 
---------------------+-------------------+---------+----------+-----------+---------------+-----------
+     full_name      | partition_spec_id | ordinal | field_id | source_id |     name      |  transform  
+--------------------+-------------------+---------+----------+-----------+---------------+-------------
  logs.audit         |                 0 |         |          |           |               | 
  logs.encrypted_v3  |                 0 |         |          |           |               | 
  logs.events        |                 0 |         |          |           |               | 
  logs.legacy_v1     |                 0 |         |          |           |               | 
+ sales.eu.evolved   |                 0 |       1 |     1000 |         3 | sold_day      | day
+ sales.eu.evolved   |                 1 |       1 |     1001 |         1 | id_bucket     | bucket[16]
+ sales.eu.evolved   |                 1 |       2 |     1002 |         2 | sku_prefix    | truncate[4]
+ sales.eu.evolved   |                 1 |       3 |     1003 |         3 | sold_month    | month
  sales.eu.orders    |                 0 |       1 |     1000 |         2 | placed_at_day | day
  sales.eu.orders_v3 |                 0 |         |          |           |               | 
  staging.retired    |                 0 |         |          |           |               | 
-(7 rows)
+(11 rows)
 
 SELECT t.full_name, o.sort_order_id, o.ordinal, o.source_id, o.transform,
        o.direction, o.null_order
@@ -182,10 +194,13 @@ ORDER BY t.full_name, o.ordinal NULLS FIRST;
  logs.encrypted_v3  |             0 |         |           |           |           | 
  logs.events        |             0 |         |           |           |           | 
  logs.legacy_v1     |             0 |         |           |           |           | 
+ sales.eu.evolved   |             1 |       1 |         1 | identity  | asc       | nulls-first
+ sales.eu.evolved   |             2 |       1 |         3 | identity  | desc      | nulls-last
+ sales.eu.evolved   |             2 |       2 |         2 | identity  | asc       | nulls-first
  sales.eu.orders    |             1 |       1 |         1 | identity  | asc       | nulls-first
  sales.eu.orders_v3 |             0 |         |           |           |           | 
  staging.retired    |             0 |         |           |           |           | 
-(7 rows)
+(10 rows)
 
 -- A spec with no fields still contributes a row, so a table is never missing
 -- from a partition listing.

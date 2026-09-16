@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "current-version-id": 1,
+    "format-version": 1,
+    "location": "s3://warehouse/hard/01a0a983-9408-7470-8e5d-5d3503d19d1f",
+    "properties": {},
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      }
+    ],
+    "version-log": [
+      {
+        "timestamp-ms": 1789550367752,
+        "version-id": 1
+      }
+    ],
+    "versions": [
+      {
+        "default-catalog": "prod",
+        "default-namespace": [
+          "sales",
+          "eu"
+        ],
+        "representations": [
+          {
+            "dialect": "spark",
+            "sql": "SELECT order_id FROM prod.sales.eu.orders",
+            "type": "sql"
+          }
+        ],
+        "schema-id": 0,
+        "summary": {
+          "engine-name": "fixture"
+        },
+        "timestamp-ms": 1789550367752,
+        "version-id": 1
+      }
+    ],
+    "view-uuid": "01a0a983-9408-7470-8e5d-5d3503d19d1f"
+  },
+  "metadata-location": "s3://warehouse/hard/01a0a983-9408-7470-8e5d-5d3503d19d1f/metadata/00000-01a0a983-9408-7470-8e5d-5d3503d19d1f.gz.metadata.json"
+}

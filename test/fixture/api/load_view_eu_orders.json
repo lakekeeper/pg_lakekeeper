@@ -2,11 +2,23 @@
   "metadata": {
     "current-version-id": 2,
     "format-version": 1,
-    "location": "s3://warehouse/hard/01a0a6c3-cc9c-7781-9993-8f13f3b170ab",
+    "location": "s3://warehouse/hard/01a0a983-93ca-78c1-958a-2c2d9d29fe0c",
     "properties": {
       "owner": "analytics"
     },
     "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "order_id",
+            "required": true,
+            "type": "long"
+          }
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      },
       {
         "fields": [
           {
@@ -24,27 +36,15 @@
         ],
         "schema-id": 0,
         "type": "struct"
-      },
-      {
-        "fields": [
-          {
-            "id": 1,
-            "name": "order_id",
-            "required": true,
-            "type": "long"
-          }
-        ],
-        "schema-id": 1,
-        "type": "struct"
       }
     ],
     "version-log": [
       {
-        "timestamp-ms": 1789504244892,
+        "timestamp-ms": 1789550367690,
         "version-id": 1
       },
       {
-        "timestamp-ms": 1789504244000,
+        "timestamp-ms": 1789550366000,
         "version-id": 2
       }
     ],
@@ -70,7 +70,7 @@
         "summary": {
           "engine-name": "fixture"
         },
-        "timestamp-ms": 1789504244000,
+        "timestamp-ms": 1789550366000,
         "version-id": 2
       },
       {
@@ -94,11 +94,11 @@
         "summary": {
           "engine-name": "fixture"
         },
-        "timestamp-ms": 1789504244892,
+        "timestamp-ms": 1789550367690,
         "version-id": 1
       }
     ],
-    "view-uuid": "01a0a6c3-cc9c-7781-9993-8f13f3b170ab"
+    "view-uuid": "01a0a983-93ca-78c1-958a-2c2d9d29fe0c"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a6c3-cc9c-7781-9993-8f13f3b170ab/metadata/00001-01a0a6c3-ccbf-7d13-9645-d3bf7e3c45a1.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a983-93ca-78c1-958a-2c2d9d29fe0c/metadata/00001-01a0a983-93ef-7083-bdef-0e5aaf12d60e.gz.metadata.json"
 }

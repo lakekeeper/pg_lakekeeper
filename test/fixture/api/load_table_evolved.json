@@ -1,0 +1,428 @@
+{
+  "metadata": {
+    "current-schema-id": 1,
+    "current-snapshot-id": 5003,
+    "default-sort-order-id": 2,
+    "default-spec-id": 1,
+    "format-version": 3,
+    "last-column-id": 20,
+    "last-partition-id": 1003,
+    "last-sequence-number": 3,
+    "last-updated-ms": 1789550367669,
+    "location": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8",
+    "metadata-log": [
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00000-01a0a983-92a6-7272-8140-ae4b563b1eb8.gz.metadata.json",
+        "timestamp-ms": 1789550367398
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00001-01a0a983-92e3-7633-9456-87cc241dad43.gz.metadata.json",
+        "timestamp-ms": 1789550366000
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00002-01a0a983-9301-7601-a7b6-4049c82d3f0d.gz.metadata.json",
+        "timestamp-ms": 1789550367489
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00003-01a0a983-9322-7413-8fa4-9a5162d151b9.gz.metadata.json",
+        "timestamp-ms": 1789550367522
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00004-01a0a983-9342-75a0-90c8-1105a3995d46.gz.metadata.json",
+        "timestamp-ms": 1789550367554
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00005-01a0a983-9360-7642-8d14-a0000a2a0a6a.gz.metadata.json",
+        "timestamp-ms": 1789550367000
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00006-01a0a983-937b-79d0-bbcb-8bfe39e07834.gz.metadata.json",
+        "timestamp-ms": 1789550368000
+      },
+      {
+        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00007-01a0a983-9399-7eb0-9d77-6baaeb31a9ff.gz.metadata.json",
+        "timestamp-ms": 1789550367641
+      }
+    ],
+    "next-row-id": 140,
+    "partition-specs": [
+      {
+        "fields": [
+          {
+            "field-id": 1001,
+            "name": "id_bucket",
+            "source-id": 1,
+            "transform": "bucket[16]"
+          },
+          {
+            "field-id": 1002,
+            "name": "sku_prefix",
+            "source-id": 2,
+            "transform": "truncate[4]"
+          },
+          {
+            "field-id": 1003,
+            "name": "sold_month",
+            "source-id": 3,
+            "transform": "month"
+          }
+        ],
+        "spec-id": 1
+      },
+      {
+        "fields": [
+          {
+            "field-id": 1000,
+            "name": "sold_day",
+            "source-id": 3,
+            "transform": "day"
+          }
+        ],
+        "spec-id": 0
+      }
+    ],
+    "properties": {
+      "comment": "has a history",
+      "owner": "platform"
+    },
+    "refs": {
+      "main": {
+        "snapshot-id": 5003,
+        "type": "branch"
+      }
+    },
+    "schemas": [
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "id",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "sku",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "sold_at",
+            "required": true,
+            "type": "timestamp"
+          },
+          {
+            "id": 4,
+            "name": "sold_on",
+            "required": false,
+            "type": "date"
+          },
+          {
+            "id": 5,
+            "name": "opened_at",
+            "required": false,
+            "type": "time"
+          },
+          {
+            "id": 6,
+            "name": "ratio",
+            "required": false,
+            "type": "float"
+          },
+          {
+            "id": 7,
+            "name": "qty",
+            "required": false,
+            "type": "int"
+          },
+          {
+            "id": 8,
+            "name": "flag",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "id": 9,
+            "name": "digest",
+            "required": false,
+            "type": "fixed[16]"
+          },
+          {
+            "id": 10,
+            "name": "legacy_note",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 11,
+            "name": "lines",
+            "required": false,
+            "type": {
+              "element": {
+                "fields": [
+                  {
+                    "id": 14,
+                    "name": "line_no",
+                    "required": true,
+                    "type": "int"
+                  },
+                  {
+                    "doc": "Free text",
+                    "id": 15,
+                    "name": "note",
+                    "required": false,
+                    "type": "string"
+                  }
+                ],
+                "type": "struct"
+              },
+              "element-id": 13,
+              "element-required": false,
+              "type": "list"
+            }
+          },
+          {
+            "id": 12,
+            "name": "attrs",
+            "required": false,
+            "type": {
+              "key": "string",
+              "key-id": 16,
+              "type": "map",
+              "value": {
+                "fields": [
+                  {
+                    "id": 18,
+                    "name": "v",
+                    "required": false,
+                    "type": "double"
+                  }
+                ],
+                "type": "struct"
+              },
+              "value-id": 17,
+              "value-required": false
+            }
+          }
+        ],
+        "schema-id": 0,
+        "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "id",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "sku",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "sold_at",
+            "required": true,
+            "type": "timestamp"
+          },
+          {
+            "id": 4,
+            "name": "sold_on",
+            "required": false,
+            "type": "date"
+          },
+          {
+            "id": 5,
+            "name": "opened_at",
+            "required": false,
+            "type": "time"
+          },
+          {
+            "id": 6,
+            "name": "ratio",
+            "required": false,
+            "type": "float"
+          },
+          {
+            "id": 7,
+            "name": "quantity",
+            "required": false,
+            "type": "int"
+          },
+          {
+            "id": 8,
+            "name": "flag",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "id": 9,
+            "name": "digest",
+            "required": false,
+            "type": "fixed[16]"
+          },
+          {
+            "id": 11,
+            "name": "lines",
+            "required": false,
+            "type": {
+              "element": {
+                "fields": [
+                  {
+                    "id": 13,
+                    "name": "line_no",
+                    "required": true,
+                    "type": "int"
+                  },
+                  {
+                    "doc": "Free text",
+                    "id": 14,
+                    "name": "note",
+                    "required": false,
+                    "type": "string"
+                  }
+                ],
+                "type": "struct"
+              },
+              "element-id": 12,
+              "element-required": false,
+              "type": "list"
+            }
+          },
+          {
+            "id": 15,
+            "name": "attrs",
+            "required": false,
+            "type": {
+              "key": "string",
+              "key-id": 16,
+              "type": "map",
+              "value": {
+                "fields": [
+                  {
+                    "id": 18,
+                    "name": "v",
+                    "required": false,
+                    "type": "double"
+                  }
+                ],
+                "type": "struct"
+              },
+              "value-id": 17,
+              "value-required": false
+            }
+          },
+          {
+            "id": 19,
+            "initial-default": "eu",
+            "name": "region",
+            "required": true,
+            "type": "string",
+            "write-default": "eu"
+          },
+          {
+            "id": 20,
+            "initial-default": 0,
+            "name": "priority",
+            "required": false,
+            "type": "int",
+            "write-default": 1
+          }
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      }
+    ],
+    "snapshot-log": [
+      {
+        "snapshot-id": 5002,
+        "timestamp-ms": 1789550367000
+      },
+      {
+        "snapshot-id": 5003,
+        "timestamp-ms": 1789550368000
+      }
+    ],
+    "snapshots": [
+      {
+        "added-rows": 0,
+        "first-row-id": 140,
+        "manifest-list": "s3://warehouse/hard/sales/eu/evolved/metadata/snap-5003.avro",
+        "parent-snapshot-id": 5002,
+        "schema-id": 1,
+        "sequence-number": 3,
+        "snapshot-id": 5003,
+        "summary": {
+          "added-delete-files": "1",
+          "added-position-deletes": "5",
+          "deleted-records": "5",
+          "operation": "delete",
+          "total-data-files": "5",
+          "total-delete-files": "1",
+          "total-files-size": "5376",
+          "total-records": "110"
+        },
+        "timestamp-ms": 1789550368000
+      },
+      {
+        "added-rows": 40,
+        "first-row-id": 100,
+        "manifest-list": "s3://warehouse/hard/sales/eu/evolved/metadata/snap-5002.avro",
+        "parent-snapshot-id": 5001,
+        "schema-id": 1,
+        "sequence-number": 2,
+        "snapshot-id": 5002,
+        "summary": {
+          "added-data-files": "2",
+          "added-files-size": "2048",
+          "added-records": "40",
+          "deleted-data-files": "1",
+          "deleted-records": "25",
+          "operation": "overwrite",
+          "removed-files-size": "1024",
+          "total-data-files": "5",
+          "total-delete-files": "0",
+          "total-files-size": "5120",
+          "total-records": "115"
+        },
+        "timestamp-ms": 1789550367000
+      }
+    ],
+    "sort-orders": [
+      {
+        "fields": [
+          {
+            "direction": "asc",
+            "null-order": "nulls-first",
+            "source-id": 1,
+            "transform": "identity"
+          }
+        ],
+        "order-id": 1
+      },
+      {
+        "fields": [
+          {
+            "direction": "desc",
+            "null-order": "nulls-last",
+            "source-id": 3,
+            "transform": "identity"
+          },
+          {
+            "direction": "asc",
+            "null-order": "nulls-first",
+            "source-id": 2,
+            "transform": "identity"
+          }
+        ],
+        "order-id": 2
+      }
+    ],
+    "table-uuid": "01a0a983-92a6-7272-8140-ae359d9642d8"
+  },
+  "metadata-location": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00008-01a0a983-93b5-7f72-a843-e865bf9b6448.gz.metadata.json"
+}

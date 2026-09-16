@@ -8,12 +8,12 @@
     "last-column-id": 2,
     "last-partition-id": 999,
     "last-sequence-number": 2,
-    "last-updated-ms": 1789504245000,
-    "location": "s3://warehouse/hard/01a0a6c3-cb2f-7c31-894a-c36013e035ad",
+    "last-updated-ms": 1789550367000,
+    "location": "s3://warehouse/hard/01a0a983-9125-7cc3-be7f-f4ba465bf101",
     "metadata-log": [
       {
-        "metadata-file": "s3://warehouse/hard/01a0a6c3-cb2f-7c31-894a-c36013e035ad/metadata/00000-01a0a6c3-cb2f-7c31-894a-c37cac9be859.gz.metadata.json",
-        "timestamp-ms": 1789504244527
+        "metadata-file": "s3://warehouse/hard/01a0a983-9125-7cc3-be7f-f4ba465bf101/metadata/00000-01a0a983-9125-7cc3-be7f-f4c77fcca9f6.gz.metadata.json",
+        "timestamp-ms": 1789550367013
       }
     ],
     "next-row-id": 35,
@@ -52,7 +52,7 @@
     "snapshot-log": [
       {
         "snapshot-id": 4002,
-        "timestamp-ms": 1789504245000
+        "timestamp-ms": 1789550367000
       }
     ],
     "snapshots": [
@@ -72,7 +72,7 @@
           "total-files-size": "512",
           "total-records": "25"
         },
-        "timestamp-ms": 1789504244000
+        "timestamp-ms": 1789550366000
       },
       {
         "added-rows": 10,
@@ -92,7 +92,7 @@
           "total-files-size": "1024",
           "total-records": "35"
         },
-        "timestamp-ms": 1789504245000
+        "timestamp-ms": 1789550367000
       }
     ],
     "sort-orders": [
@@ -101,7 +101,7 @@
         "order-id": 0
       }
     ],
-    "table-uuid": "01a0a6c3-cb2f-7c31-894a-c36013e035ad"
+    "table-uuid": "01a0a983-9125-7cc3-be7f-f4ba465bf101"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a6c3-cb2f-7c31-894a-c36013e035ad/metadata/00001-01a0a6c3-cb73-7042-a175-2ca917a492a6.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a983-9125-7cc3-be7f-f4ba465bf101/metadata/00001-01a0a983-916e-7ed0-9e44-278673de746b.gz.metadata.json"
 }

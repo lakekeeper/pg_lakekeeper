@@ -102,9 +102,10 @@ ORDER BY t.full_name;
  logs.encrypted_v3  |                  |                    |               |                  |               
  logs.events        |                  |                    |               |                  |               
  logs.legacy_v1     |                  |                    |               |                  |               
+ sales.eu.evolved   |                5 |                  1 |           110 |             5376 |           1075
  sales.eu.orders    |                3 |                  0 |           150 |             3072 |           1024
  sales.eu.orders_v3 |                2 |                  0 |            35 |             1024 |            512
-(6 rows)
+(7 rows)
 
 -- A table that has never been written to has no current snapshot. A maintenance
 -- pass must still see it rather than drop it from the listing.
@@ -133,8 +134,9 @@ WHERE NOT EXISTS (SELECT 1 FROM lakekeeper.table_ref r
 ORDER BY t.full_name, s.snapshot_id;
      full_name      | snapshot_id | sequence_number 
 --------------------+-------------+-----------------
+ sales.eu.evolved   |        5002 |               2
  sales.eu.orders_v3 |        4001 |               1
-(1 row)
+(2 rows)
 
 SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.table_snapshot s
@@ -205,6 +207,7 @@ ORDER BY 1;
  logs.audit
  logs.encrypted_v3
  logs.legacy_v1
+ sales.eu.evolved
  sales.eu.orders_v3
-(4 rows)
+(5 rows)
 

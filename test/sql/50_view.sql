@@ -25,7 +25,9 @@ SELECT pgl_test.ok(
     'the view reports the version the catalog serves');
 
 SELECT pgl_test.ok(
-    (SELECT count(*) FROM lakekeeper.view_version_log) = 2,
+    (SELECT count(*) FROM lakekeeper.view_version_log l
+     JOIN lakekeeper.iceberg_view v USING (warehouse_id, view_id)
+     WHERE v.full_name = 'sales.eu.eu_orders') = 2,
     'the version log records both versions');
 
 SELECT pgl_test.ok(

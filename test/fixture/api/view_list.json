@@ -6,6 +6,13 @@
         "sales",
         "eu"
       ]
+    },
+    {
+      "name": "eu_orders_cat",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
     }
   ]
 }

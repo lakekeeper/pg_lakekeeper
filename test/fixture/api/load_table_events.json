@@ -7,8 +7,8 @@
     "last-column-id": 2,
     "last-partition-id": 999,
     "last-sequence-number": 0,
-    "last-updated-ms": 1789504244501,
-    "location": "s3://warehouse/hard/01a0a6c3-cb14-7b63-a47b-948df3599c29",
+    "last-updated-ms": 1789550366987,
+    "location": "s3://warehouse/hard/01a0a983-910b-71e3-8b1f-2aa1bafc288a",
     "partition-specs": [
       {
         "fields": [],
@@ -42,7 +42,7 @@
         "order-id": 0
       }
     ],
-    "table-uuid": "01a0a6c3-cb14-7b63-a47b-948df3599c29"
+    "table-uuid": "01a0a983-910b-71e3-8b1f-2aa1bafc288a"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a6c3-cb14-7b63-a47b-948df3599c29/metadata/00000-01a0a6c3-cb15-7f80-9e32-8eed142f2e39.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a0a983-910b-71e3-8b1f-2aa1bafc288a/metadata/00000-01a0a983-910b-71e3-8b1f-2ab3661dc7a9.gz.metadata.json"
 }

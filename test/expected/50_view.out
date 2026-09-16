@@ -32,10 +32,11 @@ SELECT pgl_test.inlined('SELECT * FROM lakekeeper.view_version_log');
 SELECT full_name, format_version, current_version_id, current_schema_id, is_live
 FROM lakekeeper.iceberg_view
 ORDER BY full_name;
-     full_name      | format_version | current_version_id | current_schema_id | is_live 
---------------------+----------------+--------------------+-------------------+---------
- sales.eu.eu_orders | v1             |                  2 |                 1 | t
-(1 row)
+       full_name        | format_version | current_version_id | current_schema_id | is_live 
+------------------------+----------------+--------------------+-------------------+---------
+ sales.eu.eu_orders     | v1             |                  2 |                 1 | t
+ sales.eu.eu_orders_cat | v1             |                  1 |                 0 | t
+(2 rows)
 
 SELECT v.version_id, v.schema_id, v.default_catalog, v.default_namespace_name,
        v.summary
@@ -44,19 +45,21 @@ ORDER BY v.version_id;
  version_id | schema_id | default_catalog | default_namespace_name |          summary           
 ------------+-----------+-----------------+------------------------+----------------------------
           1 |         0 |                 | {sales,eu}             | {"engine-name": "fixture"}
+          1 |         0 | prod            | {sales,eu}             | {"engine-name": "fixture"}
           2 |         1 |                 | {sales,eu}             | {"engine-name": "fixture"}
-(2 rows)
+(3 rows)
 
 SELECT r.version_id, r.typ, r.dialect, r.sql
 FROM lakekeeper.view_representation r
 ORDER BY r.version_id, r.dialect;
- version_id | typ | dialect |                 sql                 
-------------+-----+---------+-------------------------------------
+ version_id | typ | dialect |                    sql                    
+------------+-----+---------+-------------------------------------------
           1 | sql | spark   | SELECT order_id, amount FROM orders
+          1 | sql | spark   | SELECT order_id FROM prod.sales.eu.orders
           1 | sql | trino   | SELECT order_id, amount FROM orders
           2 | sql | spark   | SELECT order_id FROM orders
           2 | sql | trino   | SELECT order_id FROM orders
-(4 rows)
+(5 rows)
 
 SELECT pgl_test.ok(
     (SELECT current_version_id FROM lakekeeper.iceberg_view
@@ -68,7 +71,9 @@ SELECT pgl_test.ok(
 (1 row)
 
 SELECT pgl_test.ok(
-    (SELECT count(*) FROM lakekeeper.view_version_log) = 2,
+    (SELECT count(*) FROM lakekeeper.view_version_log l
+     JOIN lakekeeper.iceberg_view v USING (warehouse_id, view_id)
+     WHERE v.full_name = 'sales.eu.eu_orders') = 2,
     'the version log records both versions');
  ok 
 ----

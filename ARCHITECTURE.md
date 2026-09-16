@@ -156,7 +156,9 @@ the same rows the views expose. Five functions assemble them in SQL:
   looks complete: a format version 1 table, whose document has a different shape,
   and a table carrying encryption keys, whose document includes wrapped key
   material that this extension does not read.
-- `view_metadata(warehouse_id, view_id)` builds the view metadata document.
+- `view_metadata(warehouse_id, view_id)` builds the view metadata document. A view
+  document always carries `properties`, empty or not, where a table document omits
+  the key when there are none; each follows what the catalog serves.
 - `load_table(warehouse_id, namespace, name)` and
   `load_view(warehouse_id, namespace, name)` return the load response,
   `metadata-location` and `metadata`, for a table or view named the way the
@@ -229,8 +231,11 @@ and a tag, both statistics kinds, an Iceberg view with two versions and two
 dialects, a generic table, tags of all three value kinds on all six target kinds,
 grants at every resource level, a soft-deleted table, a protected table, one table
 per allowed format version, a format version 3 table whose snapshots carry a row
-lineage range and an encryption key reference, and a table with an encryption key
-registered. `populate.sh` also captures the REST responses
+lineage range and an encryption key reference, a table with an encryption key
+registered, a view with a default catalog, and a table with a history: two schemas
+with a dropped and a renamed column and columns with defaults, two partition specs,
+two sort orders, append, overwrite and delete snapshots, a removed snapshot, and
+changed properties. `populate.sh` also captures the REST responses
 the document functions are compared against, with vended storage credentials
 removed.
 
@@ -245,21 +250,25 @@ Setting `LAKEKEEPER_SCHEMA` moves the fixture out of `public` first, which
 exercises the binding against a named schema.
 
 Tests are `pg_regress` scripts under `test/sql`, checked against `test/expected`.
-Four helpers carry the assertions: `pgl_test.ok(condition, message)` raises a
+The assertions rest on a few helpers. `pgl_test.ok(condition, message)` raises a
 named error, which `pg_regress` records in the diff and then continues past, so
-one run reports every failure; `pgl_test.inlined(query)` fails when the plan for a
-query contains a function scan over one of the extension's functions;
-`pgl_test.doc_eq(ours, theirs, unordered)` compares two documents key by key,
-exactly, except for the named keys whose arrays the catalog serves from unordered
-collections (`snapshots` and `versions`); `pgl_test.json_canonical(jsonb)` sorts
-every array, for those keys.
+one run reports every failure. `pgl_test.inlined(query)` fails when the plan for a
+query contains a function scan over one of the extension's functions.
+`pgl_test.doc_eq(ours, theirs)` compares two documents key by key through
+`pgl_test.section_eq`, which is exact except for the sections the catalog serves
+from unordered collections; `pgl_test.id_key` names those sections (`schemas`,
+`partition-specs`, `sort-orders`, `snapshots`, `statistics`,
+`partition-statistics`, `versions`) with the key that identifies an element, and
+`section_eq` sorts both sides by it before comparing. The order inside an element,
+such as the fields of a schema or a spec, and the order of the three logs, are
+compared as served.
 
 The captured responses are the oracle twice over. The document functions are
-compared against them whole, so field order inside a schema and the order of both
-logs are checked exactly. Each detail view is then compared against the matching
-section of the same response, because a view and a document function read the same
-upstream rows through different expressions, and only one of the two would
-otherwise be checked.
+compared against them whole. Each detail view is then compared against the matching
+section of the same response through `pgl_test.table_parity` and
+`pgl_test.view_parity`, for every table and view captured, because a view and a
+document function read the same upstream rows through different expressions, and
+only one of the two would otherwise be checked.
 
 `test/sql/02_guard.sql` tampers inside a transaction and rolls back, so the
 failure paths are exercised: a changed migration checksum, a binding that no

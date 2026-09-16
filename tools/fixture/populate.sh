@@ -286,6 +286,143 @@ req POST "$soft/namespaces/staging/tables" '{
     "stage-create": false}' >/dev/null
 req DELETE "$soft/namespaces/staging/tables/retired" >/dev/null
 
+# --- a table with a history -------------------------------------------------
+# Schema, partition spec and sort order evolution, column defaults, append,
+# overwrite and delete snapshots, a removed snapshot, and property changes: the
+# shapes a table accumulates once engines have written to it.
+req POST "$cat/namespaces/$eu/tables" '{
+    "name": "evolved",
+    "schema": {"type": "struct", "schema-id": 0, "fields": [
+        {"id": 1, "name": "id", "required": true, "type": "long"},
+        {"id": 2, "name": "sku", "required": true, "type": "string"},
+        {"id": 3, "name": "sold_at", "required": true, "type": "timestamp"},
+        {"id": 4, "name": "sold_on", "required": false, "type": "date"},
+        {"id": 5, "name": "opened_at", "required": false, "type": "time"},
+        {"id": 6, "name": "ratio", "required": false, "type": "float"},
+        {"id": 7, "name": "qty", "required": false, "type": "int"},
+        {"id": 8, "name": "flag", "required": false, "type": "boolean"},
+        {"id": 9, "name": "digest", "required": false, "type": "fixed[16]"},
+        {"id": 10, "name": "legacy_note", "required": false, "type": "string"},
+        {"id": 11, "name": "lines", "required": false, "type": {
+            "type": "list", "element-id": 12, "element-required": false,
+            "element": {"type": "struct", "fields": [
+                {"id": 13, "name": "line_no", "required": true, "type": "int"},
+                {"id": 14, "name": "note", "required": false, "type": "string",
+                 "doc": "Free text"}]}}},
+        {"id": 15, "name": "attrs", "required": false, "type": {
+            "type": "map", "key-id": 16, "key": "string",
+            "value-id": 17, "value-required": false,
+            "value": {"type": "struct", "fields": [
+                {"id": 18, "name": "v", "required": false, "type": "double"}]}}}]},
+    "partition-spec": {"spec-id": 0, "fields": [
+        {"source-id": 3, "field-id": 1000, "transform": "day", "name": "sold_day"}]},
+    "write-order": {"order-id": 1, "fields": [
+        {"source-id": 1, "transform": "identity", "direction": "asc",
+         "null-order": "nulls-first"}]},
+    "properties": {"format-version": "3", "owner": "analytics",
+                   "write.target-file-size-bytes": "134217728"},
+    "stage-create": false}' >/dev/null
+
+evolved=$(req GET "$cat/namespaces/$eu/tables/evolved" | jq -r '.metadata."table-uuid"')
+ev="s3://warehouse/hard/sales/eu/evolved/metadata"
+
+commit_evolved() {  # updates-json
+    req POST "$cat/namespaces/$eu/tables/evolved" "{
+        \"identifier\": {\"namespace\": [\"sales\", \"eu\"], \"name\": \"evolved\"},
+        \"requirements\": [{\"type\": \"assert-table-uuid\", \"uuid\": \"$evolved\"}],
+        \"updates\": $1}" >/dev/null
+}
+
+commit_evolved "[
+    {\"action\": \"add-snapshot\", \"snapshot\": {
+        \"snapshot-id\": 5001, \"sequence-number\": 1, \"timestamp-ms\": $now_ms,
+        \"manifest-list\": \"$ev/snap-5001.avro\", \"schema-id\": 0,
+        \"first-row-id\": 0, \"added-rows\": 100,
+        \"summary\": {\"operation\": \"append\",
+            \"added-data-files\": \"4\", \"added-records\": \"100\",
+            \"total-data-files\": \"4\", \"total-delete-files\": \"0\",
+            \"total-records\": \"100\", \"total-files-size\": \"4096\"}}},
+    {\"action\": \"set-snapshot-ref\", \"ref-name\": \"main\",
+     \"type\": \"branch\", \"snapshot-id\": 5001}]"
+
+# Schema 1 drops legacy_note, renames qty, and adds two columns with defaults.
+commit_evolved '[
+    {"action": "add-schema", "last-column-id": 20, "schema": {
+        "type": "struct", "schema-id": 1, "fields": [
+        {"id": 1, "name": "id", "required": true, "type": "long"},
+        {"id": 2, "name": "sku", "required": true, "type": "string"},
+        {"id": 3, "name": "sold_at", "required": true, "type": "timestamp"},
+        {"id": 4, "name": "sold_on", "required": false, "type": "date"},
+        {"id": 5, "name": "opened_at", "required": false, "type": "time"},
+        {"id": 6, "name": "ratio", "required": false, "type": "float"},
+        {"id": 7, "name": "quantity", "required": false, "type": "int"},
+        {"id": 8, "name": "flag", "required": false, "type": "boolean"},
+        {"id": 9, "name": "digest", "required": false, "type": "fixed[16]"},
+        {"id": 11, "name": "lines", "required": false, "type": {
+            "type": "list", "element-id": 12, "element-required": false,
+            "element": {"type": "struct", "fields": [
+                {"id": 13, "name": "line_no", "required": true, "type": "int"},
+                {"id": 14, "name": "note", "required": false, "type": "string",
+                 "doc": "Free text"}]}}},
+        {"id": 15, "name": "attrs", "required": false, "type": {
+            "type": "map", "key-id": 16, "key": "string",
+            "value-id": 17, "value-required": false,
+            "value": {"type": "struct", "fields": [
+                {"id": 18, "name": "v", "required": false, "type": "double"}]}}},
+        {"id": 19, "name": "region", "required": true, "type": "string",
+         "initial-default": "eu", "write-default": "eu"},
+        {"id": 20, "name": "priority", "required": false, "type": "int",
+         "initial-default": 0, "write-default": 1}]}},
+    {"action": "set-current-schema", "schema-id": -1}]'
+
+commit_evolved '[
+    {"action": "add-spec", "spec": {"spec-id": 1, "fields": [
+        {"source-id": 1, "field-id": 1001, "transform": "bucket[16]", "name": "id_bucket"},
+        {"source-id": 2, "field-id": 1002, "transform": "truncate[4]", "name": "sku_prefix"},
+        {"source-id": 3, "field-id": 1003, "transform": "month", "name": "sold_month"}]}},
+    {"action": "set-default-spec", "spec-id": -1}]'
+
+commit_evolved '[
+    {"action": "add-sort-order", "sort-order": {"order-id": 2, "fields": [
+        {"source-id": 3, "transform": "identity", "direction": "desc",
+         "null-order": "nulls-last"},
+        {"source-id": 2, "transform": "identity", "direction": "asc",
+         "null-order": "nulls-first"}]}},
+    {"action": "set-default-sort-order", "sort-order-id": -1}]'
+
+commit_evolved "[
+    {\"action\": \"add-snapshot\", \"snapshot\": {
+        \"snapshot-id\": 5002, \"parent-snapshot-id\": 5001, \"sequence-number\": 2,
+        \"timestamp-ms\": $(( now_ms + 1000 )), \"manifest-list\": \"$ev/snap-5002.avro\",
+        \"schema-id\": 1, \"first-row-id\": 100, \"added-rows\": 40,
+        \"summary\": {\"operation\": \"overwrite\",
+            \"added-data-files\": \"2\", \"deleted-data-files\": \"1\",
+            \"added-records\": \"40\", \"deleted-records\": \"25\",
+            \"removed-files-size\": \"1024\", \"added-files-size\": \"2048\",
+            \"total-data-files\": \"5\", \"total-delete-files\": \"0\",
+            \"total-records\": \"115\", \"total-files-size\": \"5120\"}}},
+    {\"action\": \"set-snapshot-ref\", \"ref-name\": \"main\",
+     \"type\": \"branch\", \"snapshot-id\": 5002}]"
+
+commit_evolved "[
+    {\"action\": \"add-snapshot\", \"snapshot\": {
+        \"snapshot-id\": 5003, \"parent-snapshot-id\": 5002, \"sequence-number\": 3,
+        \"timestamp-ms\": $(( now_ms + 2000 )), \"manifest-list\": \"$ev/snap-5003.avro\",
+        \"schema-id\": 1, \"first-row-id\": 140, \"added-rows\": 0,
+        \"summary\": {\"operation\": \"delete\",
+            \"added-delete-files\": \"1\", \"added-position-deletes\": \"5\",
+            \"deleted-records\": \"5\", \"total-data-files\": \"5\",
+            \"total-delete-files\": \"1\", \"total-records\": \"110\",
+            \"total-files-size\": \"5376\"}}},
+    {\"action\": \"set-snapshot-ref\", \"ref-name\": \"main\",
+     \"type\": \"branch\", \"snapshot-id\": 5003}]"
+
+commit_evolved '[{"action": "remove-snapshots", "snapshot-ids": [5001]}]'
+
+commit_evolved '[
+    {"action": "set-properties", "updates": {"owner": "platform", "comment": "has a history"}},
+    {"action": "remove-properties", "removals": ["write.target-file-size-bytes"]}]'
+
 # --- views ------------------------------------------------------------------
 req POST "$cat/namespaces/$eu/views" "{
     \"name\": \"eu_orders\",
@@ -320,6 +457,20 @@ req POST "$cat/namespaces/$eu/views/eu_orders" "{
                  \"dialect\": \"trino\"}],
             \"default-namespace\": [\"sales\", \"eu\"]}},
         {\"action\": \"set-current-view-version\", \"view-version-id\": 2}]}" >/dev/null
+
+req POST "$cat/namespaces/$eu/views" "{
+    \"name\": \"eu_orders_cat\",
+    \"schema\": {\"type\": \"struct\", \"schema-id\": 0, \"fields\": [
+        {\"id\": 1, \"name\": \"order_id\", \"required\": true, \"type\": \"long\"}]},
+    \"view-version\": {
+        \"version-id\": 1, \"schema-id\": 0, \"timestamp-ms\": $now_ms,
+        \"summary\": {\"engine-name\": \"fixture\"},
+        \"representations\": [
+            {\"type\": \"sql\", \"sql\": \"SELECT order_id FROM prod.sales.eu.orders\",
+             \"dialect\": \"spark\"}],
+        \"default-catalog\": \"prod\",
+        \"default-namespace\": [\"sales\", \"eu\"]},
+    \"properties\": {}}" >/dev/null
 
 # --- generic tables ---------------------------------------------------------
 gt=$base/lakekeeper/v1/$wh_hard
@@ -382,6 +533,8 @@ capture load_table_orders "$cat/namespaces/$eu/tables/orders"
 capture load_table_events "$cat/namespaces/logs/tables/events"
 capture load_table_orders_v3 "$cat/namespaces/$eu/tables/orders_v3"
 capture load_table_legacy_v1 "$cat/namespaces/logs/tables/legacy_v1"
+capture load_table_evolved "$cat/namespaces/$eu/tables/evolved"
+capture load_view_eu_orders_cat "$cat/namespaces/$eu/views/eu_orders_cat"
 capture load_view_eu_orders "$cat/namespaces/$eu/views/eu_orders"
 
 printf 'populated: warehouses %s %s %s, project %s\n' "$wh_hard" "$wh_soft" "$wh_off" "$finance"

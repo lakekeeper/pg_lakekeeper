@@ -13,6 +13,13 @@
         "sales",
         "eu"
       ]
+    },
+    {
+      "name": "evolved",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
     }
   ]
 }

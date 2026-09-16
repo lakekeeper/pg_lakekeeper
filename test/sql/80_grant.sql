@@ -9,7 +9,7 @@ SELECT resource_type, resource_name, privilege, principal_type,
        END AS principal,
        tabular_type
 FROM lakekeeper."grant"
-ORDER BY resource_type, privilege;
+ORDER BY resource_type, resource_name, privilege;
 
 SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper."grant"

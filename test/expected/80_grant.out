@@ -12,15 +12,15 @@ SELECT resource_type, resource_name, privilege, principal_type,
        END AS principal,
        tabular_type
 FROM lakekeeper."grant"
-ORDER BY resource_type, privilege;
+ORDER BY resource_type, resource_name, privilege;
  resource_type |   resource_name    |    privilege     | principal_type | principal  | tabular_type  
 ---------------+--------------------+------------------+----------------+------------+---------------
  namespace     | sales.eu           | get_metadata     | user           | oidc~alice | 
  project       | Default Project    | create_warehouse | role           | analysts   | 
  server        |                    | list_users       | user           | oidc~alice | 
- tabular       | sales.eu.orders    | read_data        | user           | oidc~alice | table
  tabular       | logs.delta_events  | read_data        | role           | analysts   | generic-table
  tabular       | sales.eu.eu_orders | select           | role           | analysts   | view
+ tabular       | sales.eu.orders    | read_data        | user           | oidc~alice | table
  tag           | pii                | apply            | role           | analysts   | 
  warehouse     | wh_hard            | use              | role           | analysts   | 
 (8 rows)

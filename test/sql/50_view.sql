@@ -10,14 +10,16 @@ SELECT full_name, format_version, current_version_id, current_schema_id, is_live
 FROM lakekeeper.iceberg_view
 ORDER BY full_name;
 
-SELECT v.version_id, v.schema_id, v.default_catalog, v.default_namespace_name,
-       v.summary
+SELECT iv.full_name, v.version_id, v.schema_id, v.default_catalog,
+       v.default_namespace_name, v.summary
 FROM lakekeeper.view_version v
-ORDER BY v.version_id;
+JOIN lakekeeper.iceberg_view iv USING (warehouse_id, view_id)
+ORDER BY iv.full_name, v.version_id;
 
-SELECT r.version_id, r.typ, r.dialect, r.sql
+SELECT iv.full_name, r.version_id, r.typ, r.dialect, r.sql
 FROM lakekeeper.view_representation r
-ORDER BY r.version_id, r.dialect;
+JOIN lakekeeper.iceberg_view iv USING (warehouse_id, view_id)
+ORDER BY iv.full_name, r.version_id, r.dialect;
 
 SELECT pgl_test.ok(
     (SELECT current_version_id FROM lakekeeper.iceberg_view

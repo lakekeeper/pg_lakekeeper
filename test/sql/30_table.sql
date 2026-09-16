@@ -34,10 +34,11 @@ SELECT s.snapshot_id, s.parent_snapshot_id, s.sequence_number, s.operation,
 FROM lakekeeper.table_snapshot s
 ORDER BY s.snapshot_id;
 
-SELECT r.ref_name, r.ref_type, r.snapshot_id, r.min_snapshots_to_keep,
+SELECT t.full_name, r.ref_name, r.ref_type, r.snapshot_id, r.min_snapshots_to_keep,
        r.max_snapshot_age_ms, r.max_ref_age_ms
 FROM lakekeeper.table_ref r
-ORDER BY r.ref_name;
+JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
+ORDER BY t.full_name, r.ref_name;
 
 SELECT pgl_test.ok(
     (SELECT count(*) FROM lakekeeper.table_snapshot_log l
@@ -66,13 +67,13 @@ SELECT t.full_name, f.partition_spec_id, f.ordinal, f.field_id, f.source_id,
        f.name, f.transform
 FROM lakekeeper.table_partition_field f
 JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
-ORDER BY t.full_name, f.ordinal NULLS FIRST;
+ORDER BY t.full_name, f.partition_spec_id, f.ordinal NULLS FIRST;
 
 SELECT t.full_name, o.sort_order_id, o.ordinal, o.source_id, o.transform,
        o.direction, o.null_order
 FROM lakekeeper.table_sort_field o
 JOIN lakekeeper.iceberg_table t USING (warehouse_id, table_id)
-ORDER BY t.full_name, o.ordinal NULLS FIRST;
+ORDER BY t.full_name, o.sort_order_id, o.ordinal NULLS FIRST;
 
 -- A spec with no fields still contributes a row, so a table is never missing
 -- from a partition listing.

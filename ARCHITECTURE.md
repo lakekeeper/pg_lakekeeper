@@ -180,6 +180,15 @@ case-sensitive.
 columns, so they match names the way the catalog matches them, case-insensitively
 and through the unique indexes.
 
+## Lookups
+
+Upstream's unique index on tabulars is `(warehouse_id, namespace_id, name)`. A
+point lookup by name therefore resolves the namespace first, through
+`(warehouse_id, namespace_name)`, and joins `tabular` on `namespace_id`; the
+planner then reaches the tabular row by index. Filtering `tabular` on
+`namespace_name` directly scans the warehouse. `full_name` is computed per row and
+has no equality index; it is for display and for `LIKE`.
+
 ## Security
 
 Every view is `security_invoker`, so reading one checks the caller's privileges on

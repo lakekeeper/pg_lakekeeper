@@ -55,7 +55,9 @@ service to deploy, monitor, or upgrade.
 
 ## Install
 
-Phase 1 is pure SQL. It needs PostgreSQL 15 or newer, because every view is a
+Phase 1 is pure SQL. It targets Lakekeeper 0.14.0; until that release ships it is
+built and tested against upstream `main`, and `SELECT * FROM lakekeeper.info`
+reports the exact commit. It needs PostgreSQL 15 or newer, because every view is a
 `security_invoker` view, and is tested on 15, 16, 17 and 18. Build it and install
 it into the PostgreSQL instance that hosts Lakekeeper's database (the
 `make install` step writes into PostgreSQL's extension directory and needs
@@ -100,6 +102,16 @@ FROM lakekeeper.tabular t
 JOIN lakekeeper.warehouse w USING (warehouse_id)
 WHERE t.is_live
 ORDER BY 1, 2;
+
+-- One table by name. Resolving the namespace first reaches the unique index on
+-- (warehouse_id, namespace_id, name); full_name is for display and pattern search.
+SELECT t.full_name, t.metadata_location
+FROM lakekeeper.namespace n
+JOIN lakekeeper.tabular t USING (warehouse_id, namespace_id)
+WHERE n.warehouse_id = (SELECT warehouse_id FROM lakekeeper.warehouse
+                        WHERE warehouse_name = 'demo')
+  AND n.namespace_name = ARRAY['sales', 'eu']
+  AND t.name = 'orders';
 
 -- What the current snapshot of a table holds.
 SELECT t.full_name, s.total_records, s.total_data_files, s.total_files_size

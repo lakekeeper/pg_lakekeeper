@@ -5,10 +5,11 @@
 -- not the whole document.
 SELECT pgl_test.inlined($$
     SELECT t.metadata_location
-    FROM lakekeeper.iceberg_table t
-    JOIN lakekeeper.warehouse w USING (warehouse_id)
-    WHERE w.warehouse_name = 'wh_hard'
-      AND t.namespace_name = ARRAY['sales', 'eu']
+    FROM lakekeeper.namespace n
+    JOIN lakekeeper.tabular t USING (warehouse_id, namespace_id)
+    WHERE n.warehouse_id = (SELECT warehouse_id FROM lakekeeper.warehouse
+                            WHERE warehouse_name = 'wh_hard')
+      AND n.namespace_name = ARRAY['sales', 'eu']
       AND t.name = 'orders'$$);
  inlined 
 ---------
@@ -17,10 +18,11 @@ SELECT pgl_test.inlined($$
 
 SELECT pgl_test.ok(
     (SELECT t.metadata_location
-     FROM lakekeeper.iceberg_table t
-     JOIN lakekeeper.warehouse w USING (warehouse_id)
-     WHERE w.warehouse_name = 'wh_hard'
-       AND t.namespace_name = ARRAY['sales', 'eu']
+     FROM lakekeeper.namespace n
+     JOIN lakekeeper.tabular t USING (warehouse_id, namespace_id)
+     WHERE n.warehouse_id = (SELECT warehouse_id FROM lakekeeper.warehouse
+                             WHERE warehouse_name = 'wh_hard')
+       AND n.namespace_name = ARRAY['sales', 'eu']
        AND t.name = 'orders')
     = (SELECT lakekeeper.load_table(w.warehouse_id, ARRAY['sales', 'eu'], 'orders')
                   ->>'metadata-location'

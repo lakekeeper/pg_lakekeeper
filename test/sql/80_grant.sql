@@ -28,9 +28,17 @@ SELECT pgl_test.ok(
      WHERE resource_type <> 'server' AND resource_name IS NULL) = 0,
     'every other grant resolves a resource name');
 
+-- Compared as whole grants, not counted: principal, privilege and resource.
 SELECT pgl_test.ok(
-    (SELECT count(*) FROM lakekeeper."grant")
-        = (SELECT jsonb_array_length(body->'grants')
-           FROM pgl_test.api WHERE name = 'grant_list')
-          + (SELECT count(*) FROM lakekeeper."grant" WHERE resource_type <> 'warehouse'),
-    'the warehouse grants match the warehouse grant endpoint');
+    (SELECT jsonb_agg(jsonb_build_object(
+                'privilege', g.privilege,
+                'principal', jsonb_build_object('role', g.role_id),
+                'resource', jsonb_build_object('type', g.resource_type,
+                                               'warehouse-id', g.warehouse_id))
+            ORDER BY g.privilege)
+     FROM lakekeeper."grant" g
+     WHERE g.resource_type = 'warehouse')
+    = (SELECT jsonb_agg(x - 'created-at' - 'recognized' ORDER BY x->>'privilege')
+       FROM pgl_test.api a, jsonb_array_elements(a.body->'grants') x
+       WHERE a.name = 'grant_list'),
+    'the warehouse grant matches the endpoint, principal and resource included');

@@ -236,12 +236,25 @@ Setting `LAKEKEEPER_SCHEMA` moves the fixture out of `public` first, which
 exercises the binding against a named schema.
 
 Tests are `pg_regress` scripts under `test/sql`, checked against `test/expected`.
-Two helpers carry the assertions: `pgl_test.ok(condition, message)` raises a named
-error, which `pg_regress` records in the diff and then continues past, so one run
-reports every failure; `pgl_test.inlined(query)` fails when the plan for a query
-contains a function scan over one of the extension's functions.
-`pgl_test.json_canonical(jsonb)` sorts every array in a document so two documents
-compare equal when they differ only in array order.
+Four helpers carry the assertions: `pgl_test.ok(condition, message)` raises a
+named error, which `pg_regress` records in the diff and then continues past, so
+one run reports every failure; `pgl_test.inlined(query)` fails when the plan for a
+query contains a function scan over one of the extension's functions;
+`pgl_test.doc_eq(ours, theirs, unordered)` compares two documents key by key,
+exactly, except for the named keys whose arrays the catalog serves from unordered
+collections (`snapshots` and `versions`); `pgl_test.json_canonical(jsonb)` sorts
+every array, for those keys.
+
+The captured responses are the oracle twice over. The document functions are
+compared against them whole, so field order inside a schema and the order of both
+logs are checked exactly. Each detail view is then compared against the matching
+section of the same response, because a view and a document function read the same
+upstream rows through different expressions, and only one of the two would
+otherwise be checked.
+
+`test/sql/02_guard.sql` tampers inside a transaction and rolls back, so the
+failure paths are exercised: a changed migration checksum, a binding that no
+longer resolves, a renamed upstream column, and a changed upstream column type.
 
 `test/sql/01_contract.sql` holds a snapshot of every column of every upstream
 table, with its type, nullability and collation, plus every enum's labels. An

@@ -2,26 +2,32 @@
 
 -- The document the catalog serves, rebuilt from the rows it was stored in.
 SELECT pgl_test.ok(
-    pgl_test.json_canonical(
-        lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders'))
-    = pgl_test.json_canonical(
-        (SELECT body FROM pgl_test.api WHERE name = 'load_table_orders')),
+    pgl_test.doc_eq(
+        lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders')->'metadata',
+        (SELECT body->'metadata' FROM pgl_test.api WHERE name = 'load_table_orders'),
+        ARRAY['snapshots'])
+    AND lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders')->'metadata-location'
+        = (SELECT body->'metadata-location' FROM pgl_test.api WHERE name = 'load_table_orders'),
     'load_table matches the catalog response for a table with snapshots')
 FROM lakekeeper.warehouse t WHERE t.warehouse_name = 'wh_hard';
 
 SELECT pgl_test.ok(
-    pgl_test.json_canonical(
-        lakekeeper.load_table(t.warehouse_id, ARRAY['logs'], 'events'))
-    = pgl_test.json_canonical(
-        (SELECT body FROM pgl_test.api WHERE name = 'load_table_events')),
+    pgl_test.doc_eq(
+        lakekeeper.load_table(t.warehouse_id, ARRAY['logs'], 'events')->'metadata',
+        (SELECT body->'metadata' FROM pgl_test.api WHERE name = 'load_table_events'),
+        ARRAY['snapshots'])
+    AND lakekeeper.load_table(t.warehouse_id, ARRAY['logs'], 'events')->'metadata-location'
+        = (SELECT body->'metadata-location' FROM pgl_test.api WHERE name = 'load_table_events'),
     'load_table matches the catalog response for a table with no snapshots')
 FROM lakekeeper.warehouse t WHERE t.warehouse_name = 'wh_hard';
 
 SELECT pgl_test.ok(
-    pgl_test.json_canonical(
-        lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders_v3'))
-    = pgl_test.json_canonical(
-        (SELECT body FROM pgl_test.api WHERE name = 'load_table_orders_v3')),
+    pgl_test.doc_eq(
+        lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders_v3')->'metadata',
+        (SELECT body->'metadata' FROM pgl_test.api WHERE name = 'load_table_orders_v3'),
+        ARRAY['snapshots'])
+    AND lakekeeper.load_table(t.warehouse_id, ARRAY['sales', 'eu'], 'orders_v3')->'metadata-location'
+        = (SELECT body->'metadata-location' FROM pgl_test.api WHERE name = 'load_table_orders_v3'),
     'load_table matches the catalog response for a format version 3 table')
 FROM lakekeeper.warehouse t WHERE t.warehouse_name = 'wh_hard';
 

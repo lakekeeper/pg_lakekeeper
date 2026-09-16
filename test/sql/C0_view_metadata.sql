@@ -1,10 +1,13 @@
 -- The Iceberg view metadata document and the load-view response.
 
 SELECT pgl_test.ok(
-    pgl_test.json_canonical(
-        lakekeeper.load_view(w.warehouse_id, ARRAY['sales', 'eu'], 'eu_orders'))
-    = pgl_test.json_canonical(
-        (SELECT body FROM pgl_test.api WHERE name = 'load_view_eu_orders')),
+    pgl_test.doc_eq(
+        lakekeeper.load_view(w.warehouse_id, ARRAY['sales', 'eu'], 'eu_orders')->'metadata',
+        (SELECT body->'metadata' FROM pgl_test.api WHERE name = 'load_view_eu_orders'),
+        ARRAY['versions'])
+    AND lakekeeper.load_view(w.warehouse_id, ARRAY['sales', 'eu'], 'eu_orders')->'metadata-location'
+        = (SELECT body->'metadata-location' FROM pgl_test.api
+           WHERE name = 'load_view_eu_orders'),
     'load_view matches the catalog response')
 FROM lakekeeper.warehouse w WHERE w.warehouse_name = 'wh_hard';
 

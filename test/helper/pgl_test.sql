@@ -57,3 +57,33 @@ COMMENT ON FUNCTION pgl_test.json_canonical(jsonb) IS
     'Sorts every array in a document, so two documents compare equal when they differ only in array order.';
 
 GRANT USAGE ON SCHEMA pgl_test TO PUBLIC;
+
+CREATE OR REPLACE FUNCTION pgl_test.doc_eq(ours jsonb, theirs jsonb, unordered text[])
+RETURNS boolean
+LANGUAGE plpgsql IMMUTABLE AS $$
+DECLARE
+    k text;
+BEGIN
+    IF (SELECT array_agg(x ORDER BY x) FROM jsonb_object_keys(ours) x)
+       IS DISTINCT FROM
+       (SELECT array_agg(x ORDER BY x) FROM jsonb_object_keys(theirs) x) THEN
+        RETURN false;
+    END IF;
+
+    FOR k IN SELECT jsonb_object_keys(theirs) LOOP
+        IF k = ANY (unordered) THEN
+            IF pgl_test.json_canonical(ours->k) IS DISTINCT FROM
+               pgl_test.json_canonical(theirs->k) THEN
+                RETURN false;
+            END IF;
+        ELSIF ours->k IS DISTINCT FROM theirs->k THEN
+            RETURN false;
+        END IF;
+    END LOOP;
+
+    RETURN true;
+END
+$$;
+
+COMMENT ON FUNCTION pgl_test.doc_eq(jsonb, jsonb, text[]) IS
+    'Compares two documents key by key, exactly, except for the named keys whose arrays the catalog leaves unordered.';

@@ -66,12 +66,10 @@ BEGIN
      WHERE l.warehouse_id = v.warehouse_id AND l.view_id = v.view_id;
     doc := doc || jsonb_build_object('version-log', part);
 
-    SELECT jsonb_object_agg(p.key, p.value) INTO part
+    SELECT coalesce(jsonb_object_agg(p.key, p.value), '{}'::jsonb) INTO part
       FROM @lk@.view_properties p
      WHERE p.warehouse_id = v.warehouse_id AND p.view_id = v.view_id;
-    IF part IS NOT NULL THEN
-        doc := doc || jsonb_build_object('properties', part);
-    END IF;
+    doc := doc || jsonb_build_object('properties', part);
 
     RETURN doc;
 END

@@ -256,6 +256,14 @@ otherwise be checked.
 failure paths are exercised: a changed migration checksum, a binding that no
 longer resolves, a renamed upstream column, and a changed upstream column type.
 
+`test/sql/G0_operations.sql` covers the read patterns operational tooling runs:
+reading a table's metadata pointer without building the whole document, checking
+a namespace or a name before creating it, planning compaction from the current
+snapshot's counters, listing the snapshots no ref pins, and reconciling an
+inventory of table names held outside the catalog. It also pins the consequence
+of the collation rule: a differently cased name misses the views and resolves
+through the load functions.
+
 `test/sql/01_contract.sql` holds a snapshot of every column of every upstream
 table, with its type, nullability and collation, plus every enum's labels. An
 upstream change shows up as a diff that names it.

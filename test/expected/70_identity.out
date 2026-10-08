@@ -1,0 +1,87 @@
+-- Users, roles and the edges between them.
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.users');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.role');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.role_assignment');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT pgl_test.inlined('SELECT * FROM lakekeeper.role_membership');
+ inlined 
+---------
+ 
+(1 row)
+
+SELECT user_id, name, email, user_type, last_updated_with
+FROM lakekeeper.users
+ORDER BY user_id;
+       user_id       |       name       |         email         |  user_type  | last_updated_with 
+---------------------+------------------+-----------------------+-------------+-------------------
+ kubernetes~pipeline | Nightly Pipeline |                       | application | create-endpoint
+ oidc~alice          | Alice Analyst    | alice@example.invalid | human       | create-endpoint
+(2 rows)
+
+SELECT name, description, provider_id, source_id = ident_source AS ident_matches
+FROM lakekeeper.role, LATERAL (SELECT split_part(ident, '~', 2)) AS s(ident_source)
+ORDER BY name;
+   name   |        description        | provider_id | ident_matches 
+----------+---------------------------+-------------+---------------
+ analysts | Reads the sales warehouse | lakekeeper  | t
+ juniors  |                           | lakekeeper  | t
+ robots   |                           | oidc        | t
+(3 rows)
+
+SELECT pgl_test.ok(
+    (SELECT count(*) FROM lakekeeper.users u
+     JOIN lakekeeper.role_assignment a ON a.user_id = u.user_id
+     JOIN lakekeeper.role r USING (role_id)
+     WHERE u.user_id = 'oidc~alice' AND r.name = 'analysts') = 1,
+    'a user is a member of the role it was added to');
+ ok 
+----
+ 
+(1 row)
+
+SELECT parent.name AS parent_role, member.name AS member_role
+FROM lakekeeper.role_membership m
+JOIN lakekeeper.role parent ON parent.role_id = m.parent_role_id
+JOIN lakekeeper.role member ON member.role_id = m.member_role_id
+ORDER BY parent.name, member.name;
+ parent_role | member_role 
+-------------+-------------
+ analysts    | juniors
+(1 row)
+
+SELECT pgl_test.ok(
+    (SELECT array_agg(u.user_id ORDER BY u.user_id) FROM lakekeeper.users u)
+        = (SELECT array_agg(x->>'id' ORDER BY x->>'id')
+           FROM pgl_test.api a, jsonb_array_elements(a.body->'users') x
+           WHERE a.name = 'user_list'),
+    'the users view matches the user list endpoint');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok(
+    (SELECT array_agg(r.name ORDER BY r.name) FROM lakekeeper.role r)
+        = (SELECT array_agg(x->>'name' ORDER BY x->>'name')
+           FROM pgl_test.api a, jsonb_array_elements(a.body->'roles') x
+           WHERE a.name = 'role_list'),
+    'the role view matches the role list endpoint');
+ ok 
+----
+ 
+(1 row)
+

@@ -1,0 +1,13 @@
+{
+  "identifiers": [
+    {
+      "format": "delta",
+      "id": "01a11af2-8c1f-7421-bc00-365d7ffcaa3d",
+      "name": "delta_events",
+      "namespace": [
+        "logs"
+      ]
+    }
+  ],
+  "next-page-token": "MSYxNzkxNDUzNDY1NjMyMTUxJjAxYTExYWYyLThjMWYtNzQyMS1iYzAwLTM2NWQ3ZmZjYWEzZA"
+}

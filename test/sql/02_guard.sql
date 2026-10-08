@@ -1,0 +1,77 @@
+-- What happens when the database stops matching the extension. Each case
+-- tampers inside a transaction and rolls it back.
+
+-- A changed migration checksum.
+BEGIN;
+DO $$
+DECLARE
+    src text := (SELECT lakekeeper_schema FROM lakekeeper.info);
+BEGIN
+    EXECUTE format(
+        'UPDATE %I._sqlx_migrations SET checksum = ''\x00''::bytea
+          WHERE version = (SELECT max(version) FROM %I._sqlx_migrations)', src, src);
+END $$;
+
+SELECT check_name, status FROM lakekeeper.check_schema() ORDER BY check_name;
+
+SELECT pgl_test.ok(
+    (SELECT status FROM lakekeeper.check_schema()
+     WHERE check_name = 'migration_digest') = 'error',
+    'a changed migration checksum is reported as an error');
+ROLLBACK;
+
+SELECT pgl_test.ok(
+    (SELECT status FROM lakekeeper.check_schema()
+     WHERE check_name = 'migration_digest') = 'ok',
+    'the rollback put the migration set back');
+
+-- A binding that no longer matches where Lakekeeper's tables are.
+BEGIN;
+SET LOCAL pg_lakekeeper.lakekeeper_schema = 'somewhere_else';
+
+SELECT check_name, status FROM lakekeeper.check_schema() ORDER BY check_name;
+
+SELECT pgl_test.ok(
+    (SELECT status FROM lakekeeper.check_schema()
+     WHERE check_name = 'lakekeeper_schema') = 'error',
+    'a binding that no longer resolves is reported as an error');
+ROLLBACK;
+
+-- A renamed upstream column. The view must fail rather than return anything.
+BEGIN;
+DO $$
+DECLARE
+    src text := (SELECT lakekeeper_schema FROM lakekeeper.info);
+BEGIN
+    EXECUTE format('ALTER TABLE %I.warehouse RENAME COLUMN status TO status_gone', src);
+    BEGIN
+        PERFORM count(*) FROM lakekeeper.warehouse;
+        RAISE EXCEPTION 'ASSERTION FAILED: a renamed upstream column went unnoticed';
+    EXCEPTION WHEN others THEN
+        IF SQLSTATE = 'P0001' THEN RAISE; END IF;
+        RAISE NOTICE 'renamed column raises SQLSTATE %', SQLSTATE;
+    END;
+END $$;
+ROLLBACK;
+
+-- A changed upstream column type.
+BEGIN;
+DO $$
+DECLARE
+    src text := (SELECT lakekeeper_schema FROM lakekeeper.info);
+BEGIN
+    EXECUTE format(
+        'ALTER TABLE %I.warehouse ALTER COLUMN version TYPE text USING version::text', src);
+    BEGIN
+        PERFORM count(*) FROM lakekeeper.warehouse;
+        RAISE EXCEPTION 'ASSERTION FAILED: a changed upstream column type went unnoticed';
+    EXCEPTION WHEN others THEN
+        IF SQLSTATE = 'P0001' THEN RAISE; END IF;
+        RAISE NOTICE 'changed column type raises SQLSTATE %', SQLSTATE;
+    END;
+END $$;
+ROLLBACK;
+
+SELECT pgl_test.ok(
+    (SELECT count(*) FROM lakekeeper.warehouse) = 3,
+    'the view works again once the tampering is rolled back');

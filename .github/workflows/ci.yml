@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/lint.sh
+
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/check-parity.sh
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pg: ['18', '17', '16', '15']
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/test.sh ${{ matrix.pg }}
+
+  named-schema:
+    runs-on: ubuntu-latest
+    env:
+      LAKEKEEPER_SCHEMA: lk_catalog
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/test.sh 18
+
+  restore:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        schema: ['', 'lk_catalog']
+    env:
+      LAKEKEEPER_SCHEMA: ${{ matrix.schema }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/restore-test.sh 18
+
+  canary:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ci/canary.sh
+
+  ci-pass:
+    needs: [lint, parity, test, named-schema, restore]
+    runs-on: ubuntu-latest
+    steps:
+      - run: true

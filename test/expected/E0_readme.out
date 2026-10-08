@@ -1,0 +1,68 @@
+-- The queries the README shows. They run, and they return rows.
+SELECT pgl_test.ok((SELECT count(*) FROM (
+    SELECT w.warehouse_name, t.full_name, t.typ, t.location
+    FROM lakekeeper.tabular t
+    JOIN lakekeeper.warehouse w USING (warehouse_id)
+    WHERE t.is_live
+    ORDER BY 1, 2) q) > 0,
+    'the live tabular listing returns rows');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok((SELECT count(*) FROM (
+    SELECT t.full_name, t.metadata_location
+    FROM lakekeeper.namespace n
+    JOIN lakekeeper.tabular t USING (warehouse_id, namespace_id)
+    WHERE n.warehouse_id = (SELECT warehouse_id FROM lakekeeper.warehouse
+                            WHERE warehouse_name = 'wh_hard')
+      AND n.namespace_name = ARRAY['sales', 'eu']
+      AND t.name = 'orders') q) = 1,
+    'the lookup-by-name example returns the one table');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok((SELECT count(*) FROM (
+    SELECT t.full_name, s.total_records, s.total_data_files, s.total_files_size
+    FROM lakekeeper.iceberg_table t
+    JOIN lakekeeper.table_snapshot s
+      ON s.warehouse_id = t.warehouse_id
+     AND s.table_id = t.table_id
+     AND s.snapshot_id = t.current_snapshot_id) q) > 0,
+    'the current snapshot query returns rows');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok((SELECT count(*) FROM (
+    SELECT t.full_name, f.name AS column_name, g.tag_name, g.value
+    FROM lakekeeper.tag g
+    JOIN lakekeeper.iceberg_table t
+      ON t.warehouse_id = g.warehouse_id
+     AND t.table_id = g.tabular_id
+    JOIN lakekeeper.field f
+      ON f.warehouse_id = t.warehouse_id
+     AND f.tabular_id = t.table_id
+     AND f.schema_id = t.current_schema_id
+     AND f.field_id = g.field_id
+    WHERE g.target_type = 'column') q) = 1,
+    'the column tag query returns one row per tagged column');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok(
+    lakekeeper.load_table(
+        (SELECT warehouse_id FROM lakekeeper.warehouse WHERE warehouse_name = 'wh_hard'),
+        ARRAY['sales', 'eu'], 'orders') IS NOT NULL,
+    'the load_table example returns a document');
+ ok 
+----
+ 
+(1 row)
+

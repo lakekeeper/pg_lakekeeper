@@ -1,0 +1,122 @@
+-- The Iceberg schema document. The catalog serves the schemas of a table in no
+-- particular order; the fields inside each schema are in order, and compared so.
+SELECT jsonb_pretty(lakekeeper.schema_json(t.warehouse_id, t.tabular_id, 0))
+FROM lakekeeper.tabular t
+WHERE t.full_name = 'sales.eu.orders';
+                  jsonb_pretty                   
+-------------------------------------------------
+ {                                              +
+     "type": "struct",                          +
+     "fields": [                                +
+         {                                      +
+             "id": 1,                           +
+             "doc": "Order number",             +
+             "name": "order_id",                +
+             "type": "long",                    +
+             "required": true                   +
+         },                                     +
+         {                                      +
+             "id": 2,                           +
+             "name": "placed_at",               +
+             "type": "timestamptz",             +
+             "required": true                   +
+         },                                     +
+         {                                      +
+             "id": 3,                           +
+             "name": "amount",                  +
+             "type": "decimal(12, 2)",          +
+             "required": false                  +
+         },                                     +
+         {                                      +
+             "id": 4,                           +
+             "name": "customer",                +
+             "type": {                          +
+                 "type": "struct",              +
+                 "fields": [                    +
+                     {                          +
+                         "id": 7,               +
+                         "name": "customer_id", +
+                         "type": "uuid",        +
+                         "required": true       +
+                     },                         +
+                     {                          +
+                         "id": 8,               +
+                         "name": "display_name",+
+                         "type": "string",      +
+                         "required": false      +
+                     }                          +
+                 ]                              +
+             },                                 +
+             "required": false                  +
+         },                                     +
+         {                                      +
+             "id": 5,                           +
+             "name": "items",                   +
+             "type": {                          +
+                 "type": "list",                +
+                 "element": "string",           +
+                 "element-id": 9,               +
+                 "element-required": true       +
+             },                                 +
+             "required": false                  +
+         },                                     +
+         {                                      +
+             "id": 6,                           +
+             "name": "scores",                  +
+             "type": {                          +
+                 "key": "string",               +
+                 "type": "map",                 +
+                 "value": "double",             +
+                 "key-id": 10,                  +
+                 "value-id": 11,                +
+                 "value-required": false        +
+             },                                 +
+             "required": false                  +
+         }                                      +
+     ],                                         +
+     "schema-id": 0,                            +
+     "identifier-field-ids": [                  +
+         1                                      +
+     ]                                          +
+ }
+(1 row)
+
+SELECT pgl_test.ok(
+    pgl_test.section_eq(
+        (SELECT jsonb_agg(lakekeeper.schema_json(t.warehouse_id, t.tabular_id, s.schema_id))
+         FROM lakekeeper.tabular t
+         JOIN lakekeeper.tabular_schema s ON s.warehouse_id = t.warehouse_id
+                                         AND s.tabular_id = t.tabular_id
+         WHERE t.full_name = 'sales.eu.orders'),
+        (SELECT body->'metadata'->'schemas' FROM pgl_test.api WHERE name = 'load_table_orders'),
+        'schemas'),
+    'the schema document matches the one the catalog serves for orders');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok(
+    pgl_test.section_eq(
+        (SELECT jsonb_agg(lakekeeper.schema_json(t.warehouse_id, t.tabular_id, s.schema_id))
+         FROM lakekeeper.tabular t
+         JOIN lakekeeper.tabular_schema s ON s.warehouse_id = t.warehouse_id
+                                         AND s.tabular_id = t.tabular_id
+         WHERE t.full_name = 'sales.eu.eu_orders'),
+        (SELECT body->'metadata'->'schemas' FROM pgl_test.api WHERE name = 'load_view_eu_orders'),
+        'schemas'),
+    'the schema document matches the one the catalog serves for a view');
+ ok 
+----
+ 
+(1 row)
+
+SELECT pgl_test.ok(
+    NOT (lakekeeper.schema_json(t.warehouse_id, t.tabular_id, 0) ? 'identifier-field-ids'),
+    'a schema with no identifier fields omits the key')
+FROM lakekeeper.tabular t WHERE t.full_name = 'logs.events';
+ ok 
+----
+ 
+(1 row)
+

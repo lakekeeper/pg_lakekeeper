@@ -1,0 +1,94 @@
+-- Each detail view against the matching section of the document the catalog
+-- serves, for every table and view whose response is captured. The views and
+-- the document functions read the same upstream rows through different
+-- expressions, so this checks the views, not the functions.
+SELECT 'sales.eu.orders' AS tabular, * FROM pgl_test.table_parity('sales.eu.orders', 'load_table_orders')
+UNION ALL
+SELECT 'logs.events', * FROM pgl_test.table_parity('logs.events', 'load_table_events')
+UNION ALL
+SELECT 'sales.eu.orders_v3', * FROM pgl_test.table_parity('sales.eu.orders_v3', 'load_table_orders_v3')
+UNION ALL
+SELECT 'sales.eu.evolved', * FROM pgl_test.table_parity('sales.eu.evolved', 'load_table_evolved')
+ORDER BY 1, 2;
+      tabular       |       section        | matches 
+--------------------+----------------------+---------
+ logs.events        | metadata-log         | t
+ logs.events        | partition-specs      | t
+ logs.events        | partition-statistics | t
+ logs.events        | properties           | t
+ logs.events        | refs                 | t
+ logs.events        | schemas              | t
+ logs.events        | snapshot-log         | t
+ logs.events        | snapshots            | t
+ logs.events        | sort-orders          | t
+ logs.events        | statistics           | t
+ sales.eu.evolved   | metadata-log         | t
+ sales.eu.evolved   | partition-specs      | t
+ sales.eu.evolved   | partition-statistics | t
+ sales.eu.evolved   | properties           | t
+ sales.eu.evolved   | refs                 | t
+ sales.eu.evolved   | schemas              | t
+ sales.eu.evolved   | snapshot-log         | t
+ sales.eu.evolved   | snapshots            | t
+ sales.eu.evolved   | sort-orders          | t
+ sales.eu.evolved   | statistics           | t
+ sales.eu.orders    | metadata-log         | t
+ sales.eu.orders    | partition-specs      | t
+ sales.eu.orders    | partition-statistics | t
+ sales.eu.orders    | properties           | t
+ sales.eu.orders    | refs                 | t
+ sales.eu.orders    | schemas              | t
+ sales.eu.orders    | snapshot-log         | t
+ sales.eu.orders    | snapshots            | t
+ sales.eu.orders    | sort-orders          | t
+ sales.eu.orders    | statistics           | t
+ sales.eu.orders_v3 | metadata-log         | t
+ sales.eu.orders_v3 | partition-specs      | t
+ sales.eu.orders_v3 | partition-statistics | t
+ sales.eu.orders_v3 | properties           | t
+ sales.eu.orders_v3 | refs                 | t
+ sales.eu.orders_v3 | schemas              | t
+ sales.eu.orders_v3 | snapshot-log         | t
+ sales.eu.orders_v3 | snapshots            | t
+ sales.eu.orders_v3 | sort-orders          | t
+ sales.eu.orders_v3 | statistics           | t
+(40 rows)
+
+SELECT pgl_test.ok(
+    (SELECT bool_and(matches) FROM (
+        SELECT matches FROM pgl_test.table_parity('sales.eu.orders', 'load_table_orders')
+        UNION ALL SELECT matches FROM pgl_test.table_parity('logs.events', 'load_table_events')
+        UNION ALL SELECT matches FROM pgl_test.table_parity('sales.eu.orders_v3', 'load_table_orders_v3')
+        UNION ALL SELECT matches FROM pgl_test.table_parity('sales.eu.evolved', 'load_table_evolved')) x),
+    'every table detail view matches the section of the document the catalog serves');
+ ok 
+----
+ 
+(1 row)
+
+SELECT 'sales.eu.eu_orders' AS view, * FROM pgl_test.view_parity('sales.eu.eu_orders', 'load_view_eu_orders')
+UNION ALL
+SELECT 'sales.eu.eu_orders_cat', * FROM pgl_test.view_parity('sales.eu.eu_orders_cat', 'load_view_eu_orders_cat')
+ORDER BY 1, 2;
+          view          |   section   | matches 
+------------------------+-------------+---------
+ sales.eu.eu_orders     | properties  | t
+ sales.eu.eu_orders     | schemas     | t
+ sales.eu.eu_orders     | version-log | t
+ sales.eu.eu_orders     | versions    | t
+ sales.eu.eu_orders_cat | properties  | t
+ sales.eu.eu_orders_cat | schemas     | t
+ sales.eu.eu_orders_cat | version-log | t
+ sales.eu.eu_orders_cat | versions    | t
+(8 rows)
+
+SELECT pgl_test.ok(
+    (SELECT bool_and(matches) FROM (
+        SELECT matches FROM pgl_test.view_parity('sales.eu.eu_orders', 'load_view_eu_orders')
+        UNION ALL SELECT matches FROM pgl_test.view_parity('sales.eu.eu_orders_cat', 'load_view_eu_orders_cat')) x),
+    'every view detail view matches the section of the document the catalog serves');
+ ok 
+----
+ 
+(1 row)
+

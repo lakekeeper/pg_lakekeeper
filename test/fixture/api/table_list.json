@@ -1,0 +1,25 @@
+{
+  "identifiers": [
+    {
+      "name": "orders",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
+    },
+    {
+      "name": "orders_v3",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
+    },
+    {
+      "name": "evolved",
+      "namespace": [
+        "sales",
+        "eu"
+      ]
+    }
+  ]
+}

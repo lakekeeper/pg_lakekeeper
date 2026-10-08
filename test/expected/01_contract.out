@@ -1,0 +1,680 @@
+-- The upstream schema this extension was written against. A diff in this file
+-- names exactly what changed upstream.
+SELECT check_name, status FROM lakekeeper.check_schema() ORDER BY check_name;
+    check_name     | status 
+-------------------+--------
+ lakekeeper_schema | ok
+ migration_digest  | ok
+(2 rows)
+
+SELECT c.relname,
+       a.attname,
+       replace(format_type(a.atttypid, a.atttypmod),
+               (SELECT lakekeeper_schema FROM lakekeeper.info) || '.', '') AS type,
+       a.attnotnull AS not_null,
+       coalesce(co.collname, '') AS collation
+FROM pg_catalog.pg_class c
+JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
+                              AND a.attnum > 0 AND NOT a.attisdropped
+LEFT JOIN pg_catalog.pg_collation co ON co.oid = a.attcollation
+                                    AND co.collname <> 'default'
+WHERE n.nspname = (SELECT lakekeeper_schema FROM lakekeeper.info)
+  AND c.relkind = 'r'
+ORDER BY c.relname, a.attnum;
+            relname            |            attname            |           type           | not_null |    collation     
+-------------------------------+-------------------------------+--------------------------+----------+------------------
+ _sqlx_migrations              | version                       | bigint                   | t        | 
+ _sqlx_migrations              | description                   | text                     | t        | 
+ _sqlx_migrations              | installed_on                  | timestamp with time zone | t        | 
+ _sqlx_migrations              | success                       | boolean                  | t        | 
+ _sqlx_migrations              | checksum                      | bytea                    | t        | 
+ _sqlx_migrations              | execution_time                | bigint                   | t        | 
+ current_view_metadata_version | view_id                       | uuid                     | t        | 
+ current_view_metadata_version | version_id                    | integer                  | t        | 
+ current_view_metadata_version | created_at                    | timestamp with time zone | t        | 
+ current_view_metadata_version | updated_at                    | timestamp with time zone | f        | 
+ current_view_metadata_version | warehouse_id                  | uuid                     | t        | 
+ endpoint_statistics           | endpoint_statistics_id        | uuid                     | t        | 
+ endpoint_statistics           | warehouse_id                  | uuid                     | f        | 
+ endpoint_statistics           | project_id                    | text                     | t        | 
+ endpoint_statistics           | matched_path                  | api_endpoints            | t        | 
+ endpoint_statistics           | status_code                   | integer                  | t        | 
+ endpoint_statistics           | count                         | bigint                   | t        | 
+ endpoint_statistics           | timestamp                     | timestamp with time zone | t        | 
+ endpoint_statistics           | created_at                    | timestamp with time zone | t        | 
+ endpoint_statistics           | updated_at                    | timestamp with time zone | f        | 
+ generic_table                 | warehouse_id                  | uuid                     | t        | 
+ generic_table                 | generic_table_id              | uuid                     | t        | 
+ generic_table                 | format                        | text                     | t        | 
+ generic_table                 | doc                           | text                     | f        | 
+ generic_table                 | schema_info                   | jsonb                    | f        | 
+ generic_table                 | statistics                    | jsonb                    | f        | 
+ generic_table                 | version                       | bigint                   | t        | 
+ generic_table                 | created_at                    | timestamp with time zone | t        | 
+ generic_table                 | updated_at                    | timestamp with time zone | f        | 
+ generic_table_properties      | warehouse_id                  | uuid                     | t        | 
+ generic_table_properties      | generic_table_id              | uuid                     | t        | 
+ generic_table_properties      | key                           | text                     | t        | 
+ generic_table_properties      | value                         | text                     | f        | 
+ generic_table_properties      | created_at                    | timestamp with time zone | t        | 
+ generic_table_properties      | updated_at                    | timestamp with time zone | f        | 
+ grant_assignment              | grant_id                      | uuid                     | t        | 
+ grant_assignment              | principal_type                | grant_principal_type     | t        | 
+ grant_assignment              | user_id                       | text                     | f        | 
+ grant_assignment              | role_id                       | uuid                     | f        | 
+ grant_assignment              | privilege                     | text                     | t        | 
+ grant_assignment              | resource_type                 | grant_resource_type      | t        | 
+ grant_assignment              | project_id                    | text                     | f        | 
+ grant_assignment              | warehouse_id                  | uuid                     | f        | 
+ grant_assignment              | namespace_id                  | uuid                     | f        | 
+ grant_assignment              | tabular_id                    | uuid                     | f        | 
+ grant_assignment              | tag_definition_id             | uuid                     | f        | 
+ grant_assignment              | created_at                    | timestamp with time zone | t        | 
+ idempotency_record            | idempotency_key               | uuid                     | t        | 
+ idempotency_record            | warehouse_id                  | uuid                     | t        | 
+ idempotency_record            | operation                     | api_endpoints            | t        | 
+ idempotency_record            | http_status                   | integer                  | t        | 
+ idempotency_record            | created_at                    | timestamp with time zone | t        | 
+ namespace                     | namespace_id                  | uuid                     | t        | 
+ namespace                     | warehouse_id                  | uuid                     | t        | 
+ namespace                     | namespace_name                | text[]                   | t        | case_insensitive
+ namespace                     | namespace_properties          | jsonb                    | t        | 
+ namespace                     | created_at                    | timestamp with time zone | t        | 
+ namespace                     | updated_at                    | timestamp with time zone | f        | 
+ namespace                     | protected                     | boolean                  | t        | 
+ namespace                     | version                       | bigint                   | t        | 
+ namespace                     | depth                         | integer                  | f        | 
+ partition_statistics          | snapshot_id                   | bigint                   | t        | 
+ partition_statistics          | table_id                      | uuid                     | t        | 
+ partition_statistics          | statistics_path               | text                     | t        | 
+ partition_statistics          | file_size_in_bytes            | bigint                   | t        | 
+ partition_statistics          | created_at                    | timestamp with time zone | t        | 
+ partition_statistics          | updated_at                    | timestamp with time zone | f        | 
+ partition_statistics          | warehouse_id                  | uuid                     | t        | 
+ project                       | project_name                  | text                     | t        | 
+ project                       | created_at                    | timestamp with time zone | t        | 
+ project                       | updated_at                    | timestamp with time zone | f        | 
+ project                       | project_id                    | text                     | t        | 
+ project                       | version                       | bigint                   | t        | 
+ role                          | id                            | uuid                     | t        | 
+ role                          | name                          | text                     | t        | 
+ role                          | description                   | text                     | f        | 
+ role                          | created_at                    | timestamp with time zone | t        | 
+ role                          | updated_at                    | timestamp with time zone | f        | 
+ role                          | project_id                    | text                     | t        | 
+ role                          | source_id                     | text                     | t        | 
+ role                          | provider_id                   | text                     | t        | 
+ role                          | version                       | bigint                   | t        | 
+ role_assignment               | role_id                       | uuid                     | t        | 
+ role_assignment               | user_id                       | text                     | t        | 
+ role_assignment               | created_at                    | timestamp with time zone | t        | 
+ role_assignment_sync          | user_id                       | text                     | t        | 
+ role_assignment_sync          | project_id                    | text                     | t        | 
+ role_assignment_sync          | provider_id                   | text                     | t        | 
+ role_assignment_sync          | synced_at                     | timestamp with time zone | t        | 
+ role_members_sync             | role_id                       | uuid                     | t        | 
+ role_members_sync             | synced_at                     | timestamp with time zone | t        | 
+ role_membership               | parent_role_id                | uuid                     | t        | 
+ role_membership               | member_role_id                | uuid                     | t        | 
+ role_membership               | created_at                    | timestamp with time zone | t        | 
+ schema_field                  | warehouse_id                  | uuid                     | t        | 
+ schema_field                  | tabular_id                    | uuid                     | t        | 
+ schema_field                  | schema_id                     | integer                  | t        | 
+ schema_field                  | field_id                      | integer                  | t        | 
+ schema_field                  | parent_field_id               | integer                  | f        | 
+ schema_field                  | ordinal                       | integer                  | t        | 
+ schema_field                  | name                          | text                     | t        | 
+ schema_field                  | required                      | boolean                  | t        | 
+ schema_field                  | doc                           | text                     | f        | 
+ schema_field                  | type_kind                     | iceberg_type_kind        | t        | 
+ schema_field                  | type_params                   | jsonb                    | f        | 
+ schema_field                  | initial_default               | jsonb                    | f        | 
+ schema_field                  | write_default                 | jsonb                    | f        | 
+ schema_field                  | is_identifier                 | boolean                  | t        | 
+ secret                        | secret_id                     | uuid                     | t        | 
+ secret                        | secret                        | bytea                    | t        | 
+ secret                        | created_at                    | timestamp with time zone | t        | 
+ secret                        | updated_at                    | timestamp with time zone | f        | 
+ server                        | single_row                    | boolean                  | t        | 
+ server                        | server_id                     | uuid                     | t        | 
+ server                        | terms_accepted                | boolean                  | t        | 
+ server                        | open_for_bootstrap            | boolean                  | t        | 
+ server                        | created_at                    | timestamp with time zone | t        | 
+ server                        | updated_at                    | timestamp with time zone | f        | 
+ table                         | table_id                      | uuid                     | t        | 
+ table                         | metadata                      | jsonb                    | f        | 
+ table                         | created_at                    | timestamp with time zone | t        | 
+ table                         | updated_at                    | timestamp with time zone | f        | 
+ table                         | table_format_version          | table_format_version     | t        | 
+ table                         | last_column_id                | integer                  | t        | 
+ table                         | last_sequence_number          | bigint                   | t        | 
+ table                         | last_updated_ms               | bigint                   | t        | 
+ table                         | last_partition_id             | integer                  | t        | 
+ table                         | warehouse_id                  | uuid                     | t        | 
+ table                         | next_row_id                   | bigint                   | t        | 
+ table_current_schema          | table_id                      | uuid                     | t        | 
+ table_current_schema          | schema_id                     | integer                  | t        | 
+ table_current_schema          | created_at                    | timestamp with time zone | t        | 
+ table_current_schema          | updated_at                    | timestamp with time zone | f        | 
+ table_current_schema          | warehouse_id                  | uuid                     | t        | 
+ table_default_partition_spec  | table_id                      | uuid                     | t        | 
+ table_default_partition_spec  | partition_spec_id             | integer                  | t        | 
+ table_default_partition_spec  | created_at                    | timestamp with time zone | t        | 
+ table_default_partition_spec  | updated_at                    | timestamp with time zone | f        | 
+ table_default_partition_spec  | warehouse_id                  | uuid                     | t        | 
+ table_default_sort_order      | table_id                      | uuid                     | t        | 
+ table_default_sort_order      | sort_order_id                 | bigint                   | t        | 
+ table_default_sort_order      | created_at                    | timestamp with time zone | t        | 
+ table_default_sort_order      | updated_at                    | timestamp with time zone | f        | 
+ table_default_sort_order      | warehouse_id                  | uuid                     | t        | 
+ table_encryption_keys         | warehouse_id                  | uuid                     | t        | 
+ table_encryption_keys         | table_id                      | uuid                     | t        | 
+ table_encryption_keys         | key_id                        | text                     | t        | 
+ table_encryption_keys         | encrypted_key_metadata        | bytea                    | t        | 
+ table_encryption_keys         | encrypted_by_id               | text                     | f        | 
+ table_encryption_keys         | properties                    | jsonb                    | f        | 
+ table_encryption_keys         | created_at                    | timestamp with time zone | t        | 
+ table_encryption_keys         | updated_at                    | timestamp with time zone | f        | 
+ table_metadata_log            | sequence_number               | bigint                   | t        | 
+ table_metadata_log            | table_id                      | uuid                     | t        | 
+ table_metadata_log            | timestamp                     | bigint                   | t        | 
+ table_metadata_log            | metadata_file                 | text                     | t        | 
+ table_metadata_log            | created_at                    | timestamp with time zone | t        | 
+ table_metadata_log            | updated_at                    | timestamp with time zone | f        | 
+ table_metadata_log            | warehouse_id                  | uuid                     | t        | 
+ table_partition_spec          | partition_spec_id             | integer                  | t        | 
+ table_partition_spec          | table_id                      | uuid                     | t        | 
+ table_partition_spec          | partition_spec                | jsonb                    | t        | 
+ table_partition_spec          | created_at                    | timestamp with time zone | t        | 
+ table_partition_spec          | updated_at                    | timestamp with time zone | f        | 
+ table_partition_spec          | warehouse_id                  | uuid                     | t        | 
+ table_properties              | table_id                      | uuid                     | t        | 
+ table_properties              | key                           | text                     | t        | 
+ table_properties              | value                         | text                     | t        | 
+ table_properties              | created_at                    | timestamp with time zone | t        | 
+ table_properties              | updated_at                    | timestamp with time zone | f        | 
+ table_properties              | warehouse_id                  | uuid                     | t        | 
+ table_refs                    | table_id                      | uuid                     | t        | 
+ table_refs                    | table_ref_name                | text                     | t        | 
+ table_refs                    | snapshot_id                   | bigint                   | t        | 
+ table_refs                    | retention                     | jsonb                    | t        | 
+ table_refs                    | created_at                    | timestamp with time zone | t        | 
+ table_refs                    | updated_at                    | timestamp with time zone | f        | 
+ table_refs                    | warehouse_id                  | uuid                     | t        | 
+ table_schema                  | schema_id                     | integer                  | t        | 
+ table_schema                  | table_id                      | uuid                     | t        | 
+ table_schema                  | schema                        | jsonb                    | f        | 
+ table_schema                  | created_at                    | timestamp with time zone | t        | 
+ table_schema                  | updated_at                    | timestamp with time zone | f        | 
+ table_schema                  | warehouse_id                  | uuid                     | t        | 
+ table_snapshot                | snapshot_id                   | bigint                   | t        | 
+ table_snapshot                | table_id                      | uuid                     | t        | 
+ table_snapshot                | parent_snapshot_id            | bigint                   | f        | 
+ table_snapshot                | sequence_number               | bigint                   | t        | 
+ table_snapshot                | manifest_list                 | text                     | t        | 
+ table_snapshot                | summary                       | jsonb                    | t        | 
+ table_snapshot                | schema_id                     | integer                  | f        | 
+ table_snapshot                | timestamp_ms                  | bigint                   | t        | 
+ table_snapshot                | created_at                    | timestamp with time zone | t        | 
+ table_snapshot                | updated_at                    | timestamp with time zone | f        | 
+ table_snapshot                | warehouse_id                  | uuid                     | t        | 
+ table_snapshot                | first_row_id                  | bigint                   | f        | 
+ table_snapshot                | assigned_rows                 | bigint                   | f        | 
+ table_snapshot                | key_id                        | text                     | f        | 
+ table_snapshot_log            | sequence_number               | bigint                   | t        | 
+ table_snapshot_log            | table_id                      | uuid                     | t        | 
+ table_snapshot_log            | snapshot_id                   | bigint                   | t        | 
+ table_snapshot_log            | timestamp                     | bigint                   | t        | 
+ table_snapshot_log            | created_at                    | timestamp with time zone | t        | 
+ table_snapshot_log            | updated_at                    | timestamp with time zone | f        | 
+ table_snapshot_log            | warehouse_id                  | uuid                     | t        | 
+ table_sort_order              | sort_order_id                 | bigint                   | t        | 
+ table_sort_order              | table_id                      | uuid                     | t        | 
+ table_sort_order              | sort_order                    | jsonb                    | t        | 
+ table_sort_order              | created_at                    | timestamp with time zone | t        | 
+ table_sort_order              | updated_at                    | timestamp with time zone | f        | 
+ table_sort_order              | warehouse_id                  | uuid                     | t        | 
+ table_statistics              | snapshot_id                   | bigint                   | t        | 
+ table_statistics              | table_id                      | uuid                     | t        | 
+ table_statistics              | statistics_path               | text                     | t        | 
+ table_statistics              | file_size_in_bytes            | bigint                   | t        | 
+ table_statistics              | file_footer_size_in_bytes     | bigint                   | t        | 
+ table_statistics              | key_metadata                  | text                     | f        | 
+ table_statistics              | blob_metadata                 | jsonb                    | t        | 
+ table_statistics              | created_at                    | timestamp with time zone | t        | 
+ table_statistics              | updated_at                    | timestamp with time zone | f        | 
+ table_statistics              | warehouse_id                  | uuid                     | t        | 
+ tabular                       | tabular_id                    | uuid                     | t        | 
+ tabular                       | namespace_id                  | uuid                     | t        | 
+ tabular                       | name                          | text                     | t        | case_insensitive
+ tabular                       | typ                           | tabular_type             | t        | 
+ tabular                       | metadata_location             | text                     | f        | 
+ tabular                       | created_at                    | timestamp with time zone | t        | 
+ tabular                       | updated_at                    | timestamp with time zone | f        | 
+ tabular                       | deleted_at                    | timestamp with time zone | f        | 
+ tabular                       | fs_protocol                   | text                     | t        | 
+ tabular                       | fs_location                   | text                     | t        | 
+ tabular                       | protected                     | boolean                  | t        | 
+ tabular                       | warehouse_id                  | uuid                     | t        | 
+ tabular                       | tabular_namespace_name        | text[]                   | t        | case_insensitive
+ tabular_field                 | warehouse_id                  | uuid                     | t        | 
+ tabular_field                 | tabular_id                    | uuid                     | t        | 
+ tabular_field                 | field_id                      | integer                  | t        | 
+ tag                           | tag_id                        | uuid                     | t        | 
+ tag                           | tag_definition_id             | uuid                     | t        | 
+ tag                           | warehouse_id                  | uuid                     | t        | 
+ tag                           | namespace_id                  | uuid                     | f        | 
+ tag                           | tabular_id                    | uuid                     | f        | 
+ tag                           | field_id                      | integer                  | f        | 
+ tag                           | value                         | text                     | f        | 
+ tag                           | source                        | tag_source               | t        | 
+ tag                           | created_at                    | timestamp with time zone | t        | 
+ tag                           | updated_at                    | timestamp with time zone | f        | 
+ tag_allowed_value             | tag_definition_id             | uuid                     | t        | 
+ tag_allowed_value             | value                         | text                     | t        | 
+ tag_allowed_value             | created_at                    | timestamp with time zone | t        | 
+ tag_definition                | tag_definition_id             | uuid                     | t        | 
+ tag_definition                | project_id                    | text                     | t        | 
+ tag_definition                | name                          | text                     | t        | 
+ tag_definition                | description                   | text                     | f        | 
+ tag_definition                | scope                         | text[]                   | t        | 
+ tag_definition                | value_kind                    | tag_value_kind           | t        | 
+ tag_definition                | created_at                    | timestamp with time zone | t        | 
+ tag_definition                | updated_at                    | timestamp with time zone | f        | 
+ task                          | task_id                       | uuid                     | t        | 
+ task                          | warehouse_id                  | uuid                     | f        | 
+ task                          | queue_name                    | text                     | t        | 
+ task                          | status                        | task_intermediate_status | t        | 
+ task                          | picked_up_at                  | timestamp with time zone | f        | 
+ task                          | scheduled_for                 | timestamp with time zone | t        | 
+ task                          | attempt                       | integer                  | t        | 
+ task                          | parent_task_id                | uuid                     | f        | 
+ task                          | created_at                    | timestamp with time zone | t        | 
+ task                          | updated_at                    | timestamp with time zone | f        | 
+ task                          | task_data                     | jsonb                    | t        | 
+ task                          | entity_id                     | uuid                     | f        | 
+ task                          | last_heartbeat_at             | timestamp with time zone | f        | 
+ task                          | progress                      | real                     | t        | 
+ task                          | execution_details             | jsonb                    | f        | 
+ task                          | entity_name                   | text[]                   | f        | case_insensitive
+ task                          | entity_type                   | entity_type              | t        | 
+ task                          | project_id                    | text                     | t        | 
+ task_config                   | warehouse_id                  | uuid                     | f        | 
+ task_config                   | queue_name                    | text                     | t        | 
+ task_config                   | config                        | jsonb                    | t        | 
+ task_config                   | max_time_since_last_heartbeat | interval                 | f        | 
+ task_config                   | created_at                    | timestamp with time zone | t        | 
+ task_config                   | updated_at                    | timestamp with time zone | f        | 
+ task_config                   | project_id                    | text                     | t        | 
+ task_config                   | task_config_id                | uuid                     | t        | 
+ task_log                      | task_id                       | uuid                     | t        | 
+ task_log                      | attempt                       | integer                  | t        | 
+ task_log                      | warehouse_id                  | uuid                     | f        | 
+ task_log                      | queue_name                    | text                     | t        | 
+ task_log                      | task_data                     | jsonb                    | t        | 
+ task_log                      | status                        | task_final_status        | t        | 
+ task_log                      | entity_id                     | uuid                     | f        | 
+ task_log                      | started_at                    | timestamp with time zone | f        | 
+ task_log                      | duration                      | interval                 | f        | 
+ task_log                      | message                       | text                     | f        | 
+ task_log                      | created_at                    | timestamp with time zone | t        | 
+ task_log                      | progress                      | real                     | t        | 
+ task_log                      | execution_details             | jsonb                    | f        | 
+ task_log                      | attempt_scheduled_for         | timestamp with time zone | t        | 
+ task_log                      | last_heartbeat_at             | timestamp with time zone | f        | 
+ task_log                      | parent_task_id                | uuid                     | f        | 
+ task_log                      | task_created_at               | timestamp with time zone | t        | 
+ task_log                      | entity_name                   | text[]                   | f        | case_insensitive
+ task_log                      | entity_type                   | entity_type              | t        | 
+ task_log                      | project_id                    | text                     | t        | 
+ users                         | id                            | text                     | t        | 
+ users                         | name                          | text                     | f        | 
+ users                         | email                         | text                     | f        | 
+ users                         | user_type                     | user_type                | t        | 
+ users                         | last_updated_with             | user_last_updated_with   | t        | 
+ users                         | deleted_at                    | timestamp with time zone | f        | 
+ users                         | created_at                    | timestamp with time zone | t        | 
+ users                         | updated_at                    | timestamp with time zone | f        | 
+ view                          | view_id                       | uuid                     | t        | 
+ view                          | view_format_version           | view_format_version      | t        | 
+ view                          | created_at                    | timestamp with time zone | t        | 
+ view                          | updated_at                    | timestamp with time zone | f        | 
+ view                          | warehouse_id                  | uuid                     | t        | 
+ view_properties               | view_id                       | uuid                     | t        | 
+ view_properties               | key                           | text                     | t        | 
+ view_properties               | value                         | text                     | t        | 
+ view_properties               | created_at                    | timestamp with time zone | t        | 
+ view_properties               | updated_at                    | timestamp with time zone | f        | 
+ view_properties               | warehouse_id                  | uuid                     | t        | 
+ view_representation           | view_representation_id        | uuid                     | t        | 
+ view_representation           | view_version_id               | integer                  | t        | 
+ view_representation           | view_id                       | uuid                     | t        | 
+ view_representation           | typ                           | view_representation_type | t        | 
+ view_representation           | sql                           | text                     | t        | 
+ view_representation           | dialect                       | text                     | t        | 
+ view_representation           | created_at                    | timestamp with time zone | t        | 
+ view_representation           | updated_at                    | timestamp with time zone | f        | 
+ view_representation           | warehouse_id                  | uuid                     | t        | 
+ view_schema                   | schema_id                     | integer                  | t        | 
+ view_schema                   | view_id                       | uuid                     | t        | 
+ view_schema                   | schema                        | jsonb                    | f        | 
+ view_schema                   | created_at                    | timestamp with time zone | t        | 
+ view_schema                   | updated_at                    | timestamp with time zone | f        | 
+ view_schema                   | warehouse_id                  | uuid                     | t        | 
+ view_version                  | view_id                       | uuid                     | t        | 
+ view_version                  | version_id                    | integer                  | t        | 
+ view_version                  | schema_id                     | integer                  | t        | 
+ view_version                  | timestamp                     | timestamp with time zone | t        | 
+ view_version                  | default_namespace_id          | uuid                     | f        | 
+ view_version                  | default_catalog               | text                     | f        | 
+ view_version                  | summary                       | jsonb                    | t        | 
+ view_version                  | created_at                    | timestamp with time zone | t        | 
+ view_version                  | updated_at                    | timestamp with time zone | f        | 
+ view_version                  | warehouse_id                  | uuid                     | t        | 
+ view_version_log              | view_id                       | uuid                     | t        | 
+ view_version_log              | version_id                    | integer                  | t        | 
+ view_version_log              | timestamp                     | timestamp with time zone | t        | 
+ view_version_log              | created_at                    | timestamp with time zone | t        | 
+ view_version_log              | updated_at                    | timestamp with time zone | f        | 
+ view_version_log              | warehouse_id                  | uuid                     | t        | 
+ warehouse                     | warehouse_id                  | uuid                     | t        | 
+ warehouse                     | warehouse_name                | text                     | t        | case_insensitive
+ warehouse                     | storage_profile               | jsonb                    | t        | 
+ warehouse                     | storage_secret_id             | uuid                     | f        | 
+ warehouse                     | created_at                    | timestamp with time zone | t        | 
+ warehouse                     | updated_at                    | timestamp with time zone | f        | 
+ warehouse                     | status                        | warehouse_status         | t        | 
+ warehouse                     | tabular_expiration_seconds    | bigint                   | f        | 
+ warehouse                     | tabular_delete_mode           | tabular_delete_mode      | t        | 
+ warehouse                     | project_id                    | text                     | t        | 
+ warehouse                     | protected                     | boolean                  | t        | 
+ warehouse                     | version                       | bigint                   | t        | 
+ warehouse                     | allowed_format_versions       | smallint[]               | t        | 
+ warehouse                     | default_format_version        | smallint                 | f        | 
+ warehouse                     | managed_by                    | managed_by               | t        | 
+ warehouse_statistics          | warehouse_id                  | uuid                     | t        | 
+ warehouse_statistics          | number_of_views               | bigint                   | t        | 
+ warehouse_statistics          | number_of_tables              | bigint                   | t        | 
+ warehouse_statistics          | timestamp                     | timestamp with time zone | t        | 
+ warehouse_statistics          | created_at                    | timestamp with time zone | t        | 
+ warehouse_statistics          | updated_at                    | timestamp with time zone | f        | 
+ warehouse_statistics_history  | number_of_views               | bigint                   | t        | 
+ warehouse_statistics_history  | number_of_tables              | bigint                   | t        | 
+ warehouse_statistics_history  | warehouse_id                  | uuid                     | t        | 
+ warehouse_statistics_history  | timestamp                     | timestamp with time zone | t        | 
+ warehouse_statistics_history  | created_at                    | timestamp with time zone | t        | 
+ warehouse_statistics_history  | updated_at                    | timestamp with time zone | f        | 
+(381 rows)
+
+SELECT t.typname, e.enumlabel
+FROM pg_catalog.pg_type t
+JOIN pg_catalog.pg_enum e ON e.enumtypid = t.oid
+JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+WHERE n.nspname = (SELECT lakekeeper_schema FROM lakekeeper.info)
+ORDER BY t.typname, e.enumsortorder;
+         typname          |                      enumlabel                       
+--------------------------+------------------------------------------------------
+ api_endpoints            | sign-s3-request-global
+ api_endpoints            | sign-s3-request-prefix
+ api_endpoints            | catalog-v1-get-config
+ api_endpoints            | catalog-v1-list-namespaces
+ api_endpoints            | catalog-v1-create-namespace
+ api_endpoints            | catalog-v1-load-namespace-metadata
+ api_endpoints            | catalog-v1-namespace-exists
+ api_endpoints            | catalog-v1-fetch-scan-tasks
+ api_endpoints            | catalog-v1-drop-namespace
+ api_endpoints            | catalog-v1-update-namespace-properties
+ api_endpoints            | catalog-v1-list-tables
+ api_endpoints            | catalog-v1-create-table
+ api_endpoints            | catalog-v1-load-table
+ api_endpoints            | catalog-v1-update-table
+ api_endpoints            | catalog-v1-drop-table
+ api_endpoints            | catalog-v1-table-exists
+ api_endpoints            | catalog-v1-load-credentials
+ api_endpoints            | catalog-v1-rename-table
+ api_endpoints            | catalog-v1-register-table
+ api_endpoints            | catalog-v1-report-metrics
+ api_endpoints            | catalog-v1-commit-transaction
+ api_endpoints            | catalog-v1-create-view
+ api_endpoints            | catalog-v1-list-views
+ api_endpoints            | catalog-v1-load-view
+ api_endpoints            | catalog-v1-replace-view
+ api_endpoints            | catalog-v1-drop-view
+ api_endpoints            | catalog-v1-view-exists
+ api_endpoints            | catalog-v1-rename-view
+ api_endpoints            | management-v1-server-info
+ api_endpoints            | management-v1-bootstrap
+ api_endpoints            | management-v1-create-role
+ api_endpoints            | management-v1-list-role
+ api_endpoints            | management-v1-update-role
+ api_endpoints            | management-v1-get-role
+ api_endpoints            | management-v1-delete-role
+ api_endpoints            | management-v1-search-role
+ api_endpoints            | management-v1-whoami
+ api_endpoints            | management-v1-search-user
+ api_endpoints            | management-v1-update-user
+ api_endpoints            | management-v1-get-user
+ api_endpoints            | management-v1-delete-user
+ api_endpoints            | management-v1-create-user
+ api_endpoints            | management-v1-list-user
+ api_endpoints            | management-v1-create-project
+ api_endpoints            | management-v1-get-project
+ api_endpoints            | management-v1-delete-project
+ api_endpoints            | management-v1-rename-project
+ api_endpoints            | management-v1-get-project-by-id-deprecated
+ api_endpoints            | management-v1-load-endpoint-statistics
+ api_endpoints            | management-v1-delete-project-by-id-deprecated
+ api_endpoints            | management-v1-create-warehouse
+ api_endpoints            | management-v1-list-warehouses
+ api_endpoints            | management-v1-list-projects
+ api_endpoints            | management-v1-get-warehouse
+ api_endpoints            | management-v1-delete-warehouse
+ api_endpoints            | management-v1-rename-warehouse
+ api_endpoints            | management-v1-deactivate-warehouse
+ api_endpoints            | management-v1-activate-warehouse
+ api_endpoints            | management-v1-update-storage-profile
+ api_endpoints            | management-v1-update-storage-credential
+ api_endpoints            | management-v1-get-warehouse-statistics
+ api_endpoints            | management-v1-list-deleted-tabulars
+ api_endpoints            | management-v1-undrop-tabulars-deprecated
+ api_endpoints            | management-v1-undrop-tabulars
+ api_endpoints            | management-v1-update-warehouse-delete-profile
+ api_endpoints            | permission-v1-get
+ api_endpoints            | permission-v1-post
+ api_endpoints            | permission-v1-head
+ api_endpoints            | permission-v1-delete
+ api_endpoints            | management-v1-set-warehouse-protection
+ api_endpoints            | management-v1-set-namespace-protection
+ api_endpoints            | management-v1-set-table-protection
+ api_endpoints            | management-v1-set-view-protection
+ api_endpoints            | catalog-v1-cancel-planning
+ api_endpoints            | catalog-v1-fetch-planning-result
+ api_endpoints            | catalog-v1-plan-table-scan
+ api_endpoints            | management-v1-get-view-protection
+ api_endpoints            | management-v1-get-table-protection
+ api_endpoints            | management-v1-get-namespace-protection
+ api_endpoints            | management-v1-rename-default-project-deprecated
+ api_endpoints            | management-v1-get-default-project-deprecated
+ api_endpoints            | management-v1-delete-default-project-deprecated
+ api_endpoints            | permission-v1-put
+ api_endpoints            | management-v1-rename-project-by-id-deprecated
+ api_endpoints            | sign-s3-request-tabular
+ api_endpoints            | management-v1-set-task-queue-config
+ api_endpoints            | management-v1-get-task-queue-config
+ api_endpoints            | management-v1-control-tasks
+ api_endpoints            | management-v1-get-task-details
+ api_endpoints            | management-v1-list-tasks
+ api_endpoints            | management-v1-search-tabular
+ api_endpoints            | management-v1-get-server-actions
+ api_endpoints            | management-v1-get-user-actions
+ api_endpoints            | management-v1-get-role-actions
+ api_endpoints            | management-v1-get-warehouse-actions
+ api_endpoints            | management-v1-get-project-actions
+ api_endpoints            | management-v1-get-namespace-actions
+ api_endpoints            | management-v1-get-table-actions
+ api_endpoints            | management-v1-get-view-actions
+ api_endpoints            | management-v1-batch-check-actions
+ api_endpoints            | management-v1-get-role-metadata
+ api_endpoints            | management-v1-update-role-source-system
+ api_endpoints            | management-v1-set-project-task-queue-config
+ api_endpoints            | management-v1-get-project-task-queue-config
+ api_endpoints            | management-v1-control-project-tasks
+ api_endpoints            | management-v1-get-project-task-details
+ api_endpoints            | management-v1-list-project-tasks
+ api_endpoints            | management-v1-schedule-task
+ api_endpoints            | generic-table-v1-create-generic-table
+ api_endpoints            | generic-table-v1-list-generic-tables
+ api_endpoints            | generic-table-v1-load-generic-table
+ api_endpoints            | generic-table-v1-drop-generic-table
+ api_endpoints            | generic-table-v1-rename-generic-table
+ api_endpoints            | generic-table-v1-load-generic-table-credentials
+ api_endpoints            | management-v1-get-generic-table-actions
+ api_endpoints            | management-v1-get-generic-table-protection
+ api_endpoints            | management-v1-set-generic-table-protection
+ api_endpoints            | management-v1-update-warehouse-format-version-policy
+ api_endpoints            | management-v1-set-warehouse-managed-by
+ api_endpoints            | management-v1-list-role-members
+ api_endpoints            | management-v1-add-role-members
+ api_endpoints            | management-v1-remove-role-member
+ api_endpoints            | management-v1-list-role-member-of
+ api_endpoints            | management-v1-list-user-roles
+ api_endpoints            | management-v1-list-role-transitive-members
+ api_endpoints            | management-v1-list-user-transitive-roles
+ api_endpoints            | management-v1-list-role-transitive-member-of
+ api_endpoints            | management-v1-create-tag-definition
+ api_endpoints            | management-v1-list-tag-definitions
+ api_endpoints            | management-v1-get-tag-definition
+ api_endpoints            | management-v1-update-tag-definition
+ api_endpoints            | management-v1-delete-tag-definition
+ api_endpoints            | management-v1-list-tag-attachments
+ api_endpoints            | management-v1-set-warehouse-tag
+ api_endpoints            | management-v1-delete-warehouse-tag
+ api_endpoints            | management-v1-list-warehouse-tags
+ api_endpoints            | management-v1-set-namespace-tag
+ api_endpoints            | management-v1-delete-namespace-tag
+ api_endpoints            | management-v1-list-namespace-tags
+ api_endpoints            | management-v1-set-table-tag
+ api_endpoints            | management-v1-delete-table-tag
+ api_endpoints            | management-v1-list-table-tags
+ api_endpoints            | management-v1-set-table-column-tag
+ api_endpoints            | management-v1-delete-table-column-tag
+ api_endpoints            | management-v1-list-table-column-tags
+ api_endpoints            | management-v1-list-column-tags
+ api_endpoints            | management-v1-set-view-tag
+ api_endpoints            | management-v1-delete-view-tag
+ api_endpoints            | management-v1-list-view-tags
+ api_endpoints            | management-v1-set-generic-table-tag
+ api_endpoints            | management-v1-delete-generic-table-tag
+ api_endpoints            | management-v1-list-generic-table-tags
+ api_endpoints            | management-v1-validate-warehouse
+ api_endpoints            | management-v1-validate-storage-profile
+ api_endpoints            | management-v1-validate-storage-credential
+ api_endpoints            | management-v1-validate-storage-access
+ api_endpoints            | management-v1-list-grants
+ api_endpoints            | management-v1-get-grantable-privileges
+ api_endpoints            | management-v1-list-warehouse-grants
+ api_endpoints            | management-v1-apply-warehouse-grants
+ api_endpoints            | management-v1-list-server-grants
+ api_endpoints            | management-v1-apply-server-grants
+ api_endpoints            | management-v1-list-project-grants
+ api_endpoints            | management-v1-apply-project-grants
+ api_endpoints            | management-v1-list-namespace-grants
+ api_endpoints            | management-v1-apply-namespace-grants
+ api_endpoints            | management-v1-list-tag-grants
+ api_endpoints            | management-v1-apply-tag-grants
+ api_endpoints            | management-v1-list-table-grants
+ api_endpoints            | management-v1-apply-table-grants
+ api_endpoints            | management-v1-list-view-grants
+ api_endpoints            | management-v1-apply-view-grants
+ api_endpoints            | management-v1-list-generic-table-grants
+ api_endpoints            | management-v1-apply-generic-table-grants
+ api_endpoints            | management-v1-get-tag-actions
+ api_endpoints            | management-v1-get-server-grantable-privileges
+ api_endpoints            | management-v1-get-project-grantable-privileges
+ api_endpoints            | management-v1-get-warehouse-grantable-privileges
+ api_endpoints            | management-v1-get-namespace-grantable-privileges
+ api_endpoints            | management-v1-get-table-grantable-privileges
+ api_endpoints            | management-v1-get-view-grantable-privileges
+ api_endpoints            | management-v1-get-generic-table-grantable-privileges
+ api_endpoints            | management-v1-get-tag-grantable-privileges
+ api_endpoints            | management-v1-move-namespace
+ api_endpoints            | sign-s3-request-by-table-name
+ api_endpoints            | management-v1-list-namespace-subtree-grants
+ api_endpoints            | management-v1-revoke-namespace-subtree-grants
+ api_endpoints            | management-v1-list-warehouse-subtree-grants
+ api_endpoints            | management-v1-revoke-warehouse-subtree-grants
+ deletion_kind            | default
+ deletion_kind            | purge
+ entity_type              | table
+ entity_type              | view
+ entity_type              | project
+ entity_type              | warehouse
+ entity_type              | namespace
+ entity_type              | role
+ entity_type              | user
+ entity_type              | server
+ entity_type              | generic-table
+ grant_principal_type     | user
+ grant_principal_type     | role
+ grant_resource_type      | server
+ grant_resource_type      | project
+ grant_resource_type      | warehouse
+ grant_resource_type      | namespace
+ grant_resource_type      | tabular
+ grant_resource_type      | tag
+ iceberg_type_kind        | boolean
+ iceberg_type_kind        | int
+ iceberg_type_kind        | long
+ iceberg_type_kind        | float
+ iceberg_type_kind        | double
+ iceberg_type_kind        | decimal
+ iceberg_type_kind        | date
+ iceberg_type_kind        | time
+ iceberg_type_kind        | timestamp
+ iceberg_type_kind        | timestamptz
+ iceberg_type_kind        | timestamp_ns
+ iceberg_type_kind        | timestamptz_ns
+ iceberg_type_kind        | string
+ iceberg_type_kind        | uuid
+ iceberg_type_kind        | fixed
+ iceberg_type_kind        | binary
+ iceberg_type_kind        | geometry
+ iceberg_type_kind        | geography
+ iceberg_type_kind        | unknown
+ iceberg_type_kind        | variant
+ iceberg_type_kind        | struct
+ iceberg_type_kind        | list
+ iceberg_type_kind        | map
+ managed_by               | self-managed
+ managed_by               | instance-admin
+ table_format_version     | 1
+ table_format_version     | 2
+ table_format_version     | 3
+ tabular_delete_mode      | soft
+ tabular_delete_mode      | hard
+ tabular_type             | table
+ tabular_type             | view
+ tabular_type             | generic-table
+ tag_source               | manual
+ tag_value_kind           | marker
+ tag_value_kind           | free_text
+ tag_value_kind           | enumerated
+ task_final_status        | failed
+ task_final_status        | cancelled
+ task_final_status        | success
+ task_intermediate_status | running
+ task_intermediate_status | scheduled
+ task_intermediate_status | should-stop
+ user_last_updated_with   | create-endpoint
+ user_last_updated_with   | config-call-creation
+ user_last_updated_with   | update-endpoint
+ user_last_updated_with   | role-provider
+ user_type                | application
+ user_type                | human
+ view_format_version      | v1
+ view_representation_type | sql
+ warehouse_status         | active
+ warehouse_status         | inactive
+(261 rows)
+

@@ -55,9 +55,9 @@ service to deploy, monitor, or upgrade.
 
 ## Install
 
-Phase 1 is pure SQL. It targets Lakekeeper 0.14.0; until that release ships it is
-built and tested against upstream `main`, and `SELECT * FROM lakekeeper.info`
-reports the exact commit. It needs PostgreSQL 15 or newer, because every view is a
+Phase 1 is pure SQL. It is built and tested against the Lakekeeper 0.14.0
+release, and `SELECT * FROM lakekeeper.info` reports the exact upstream commit.
+It needs PostgreSQL 15 or newer, because every view is a
 `security_invoker` view, and is tested on 15, 16, 17 and 18. Build it and install
 it into the PostgreSQL instance that hosts Lakekeeper's database (the
 `make install` step writes into PostgreSQL's extension directory and needs

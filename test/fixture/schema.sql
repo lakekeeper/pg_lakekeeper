@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict A4t991RfKnvpbKZgRgJuNhFuCnkaNEJnaw5MllwKdcQGcpktsxHwZ30kE7opc91
+\restrict BejajNfSJw6IzSz5eBaentfUlZRvlnbYp8M2xFggVkBs4BequcySsItyk77ZrC1
 
 -- Dumped from database version 15.19 (Debian 15.19-1.pgdg13+2)
 -- Dumped by pg_dump version 15.19 (Debian 15.19-1.pgdg13+2)
@@ -991,7 +991,8 @@ CREATE TABLE "public"."grant_assignment" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     CONSTRAINT "grant_principal_shape" CHECK (((("principal_type" = 'user'::"public"."grant_principal_type") AND ("user_id" IS NOT NULL) AND ("role_id" IS NULL)) OR (("principal_type" = 'role'::"public"."grant_principal_type") AND ("role_id" IS NOT NULL) AND ("user_id" IS NULL)))),
     CONSTRAINT "grant_privilege_length" CHECK ((("char_length"("privilege") >= 1) AND ("char_length"("privilege") <= 256))),
-    CONSTRAINT "grant_resource_target" CHECK (((("resource_type" = 'server'::"public"."grant_resource_type") AND ("num_nonnulls"("project_id", "warehouse_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'project'::"public"."grant_resource_type") AND ("project_id" IS NOT NULL) AND ("num_nonnulls"("warehouse_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'warehouse'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'namespace'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("namespace_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'tabular'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("tabular_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "namespace_id", "tag_definition_id") = 0)) OR (("resource_type" = 'tag'::"public"."grant_resource_type") AND ("tag_definition_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "warehouse_id", "namespace_id", "tabular_id") = 0))))
+    CONSTRAINT "grant_resource_target" CHECK (((("resource_type" = 'server'::"public"."grant_resource_type") AND ("num_nonnulls"("project_id", "warehouse_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'project'::"public"."grant_resource_type") AND ("project_id" IS NOT NULL) AND ("num_nonnulls"("warehouse_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'warehouse'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "namespace_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'namespace'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("namespace_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "tabular_id", "tag_definition_id") = 0)) OR (("resource_type" = 'tabular'::"public"."grant_resource_type") AND ("warehouse_id" IS NOT NULL) AND ("tabular_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "namespace_id", "tag_definition_id") = 0)) OR (("resource_type" = 'tag'::"public"."grant_resource_type") AND ("tag_definition_id" IS NOT NULL) AND ("num_nonnulls"("project_id", "warehouse_id", "namespace_id", "tabular_id") = 0)))),
+    CONSTRAINT "grant_server_principal_is_user" CHECK ((("resource_type" <> 'server'::"public"."grant_resource_type") OR ("principal_type" = 'user'::"public"."grant_principal_type")))
 );
 
 
@@ -3365,5 +3366,5 @@ ALTER TABLE ONLY "public"."warehouse_statistics"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict A4t991RfKnvpbKZgRgJuNhFuCnkaNEJnaw5MllwKdcQGcpktsxHwZ30kE7opc91
+\unrestrict BejajNfSJw6IzSz5eBaentfUlZRvlnbYp8M2xFggVkBs4BequcySsItyk77ZrC1
 

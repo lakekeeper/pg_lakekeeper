@@ -1,32 +1,32 @@
 {
-  "next-page-token": "MSYxNzg5NTUwMzY2NDM1MTQyJjAxYTBhOTgzLThlZTMtNzJiMC04YzM4LTRmZWQ0ZTE0MDU1Yw",
+  "next-page-token": "MSYxNzkxNDUzNDY0NzU4Mjg2JjAxYTExYWYyLTg4YjYtNzNiMi1iZTlhLWZjMjVlMWU4N2MxZA",
   "roles": [
     {
-      "created-at": "2026-09-16T09:19:26.406961Z",
+      "created-at": "2026-10-08T09:57:44.730880Z",
       "description": "Reads the sales warehouse",
-      "id": "01a0a983-8ec6-7521-b28a-d6652ba55e9b",
-      "ident": "lakekeeper~01a0a983-8ec6-7521-b28a-d6652ba55e9b",
+      "id": "01a11af2-889a-7030-8714-d72bc298a5c8",
+      "ident": "lakekeeper~01a11af2-889a-7030-8714-d72bc298a5c8",
       "name": "analysts",
       "project-id": "00000000-0000-0000-0000-000000000000",
       "provider-id": "lakekeeper",
-      "source-id": "01a0a983-8ec6-7521-b28a-d6652ba55e9b",
+      "source-id": "01a11af2-889a-7030-8714-d72bc298a5c8",
       "updated-at": null
     },
     {
-      "created-at": "2026-09-16T09:19:26.422414Z",
+      "created-at": "2026-10-08T09:57:44.744917Z",
       "description": null,
-      "id": "01a0a983-8ed6-7d61-8375-c79f6df6b1a4",
-      "ident": "lakekeeper~01a0a983-8ed6-7d61-8375-c79f6df6b1a4",
+      "id": "01a11af2-88a8-78e3-831e-baa1448b7f7d",
+      "ident": "lakekeeper~01a11af2-88a8-78e3-831e-baa1448b7f7d",
       "name": "juniors",
       "project-id": "00000000-0000-0000-0000-000000000000",
       "provider-id": "lakekeeper",
-      "source-id": "01a0a983-8ed6-7d61-8375-c79f6df6b1a4",
+      "source-id": "01a11af2-88a8-78e3-831e-baa1448b7f7d",
       "updated-at": null
     },
     {
-      "created-at": "2026-09-16T09:19:26.435142Z",
+      "created-at": "2026-10-08T09:57:44.758286Z",
       "description": null,
-      "id": "01a0a983-8ee3-72b0-8c38-4fed4e14055c",
+      "id": "01a11af2-88b6-73b2-be9a-fc25e1e87c1d",
       "ident": "oidc~group-robots",
       "name": "robots",
       "project-id": "00000000-0000-0000-0000-000000000000",

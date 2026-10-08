@@ -1,10 +1,10 @@
 {
-  "next-page-token": "MSYxNzg5NTUwMzY3ODIwMjk2JjAxYTBhOTgzLTk0NGMtNzc4My1iMzJkLWUzMzJmNWQ2MGU0NA",
+  "next-page-token": "MSYxNzkxNDUzNDY1NjYyMDA4JjAxYTExYWYyLThjM2QtNzkyMy1iNzc4LWM5MjdhYWU4ZGVkMA",
   "tag-definitions": [
     {
-      "created-at": "2026-09-16T09:19:27.795243Z",
+      "created-at": "2026-10-08T09:57:45.643191Z",
       "description": "Carries personally identifiable information",
-      "id": "01a0a983-9433-7642-b536-8d022cf5ec41",
+      "id": "01a11af2-8c2b-7de2-89d0-406bf191b9ce",
       "name": "pii",
       "scope": [
         "warehouse",
@@ -18,9 +18,9 @@
       "value-kind": "marker"
     },
     {
-      "created-at": "2026-09-16T09:19:27.808129Z",
+      "created-at": "2026-10-08T09:57:45.653608Z",
       "description": null,
-      "id": "01a0a983-9440-74e2-ad65-09eb55145655",
+      "id": "01a11af2-8c35-7c80-a897-09ed9ccaeb83",
       "name": "owner",
       "scope": [
         "warehouse",
@@ -34,9 +34,9 @@
       "value-kind": "free-text"
     },
     {
-      "created-at": "2026-09-16T09:19:27.820296Z",
+      "created-at": "2026-10-08T09:57:45.662008Z",
       "description": null,
-      "id": "01a0a983-944c-7783-b32d-e332f5d60e44",
+      "id": "01a11af2-8c3d-7923-b778-c927aae8ded0",
       "name": "tier",
       "scope": [
         "warehouse",

@@ -8,44 +8,55 @@
     "last-column-id": 20,
     "last-partition-id": 1003,
     "last-sequence-number": 3,
-    "last-updated-ms": 1789550367669,
-    "location": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8",
+    "last-updated-ms": 1791453465556,
+    "location": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e",
     "metadata-log": [
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00000-01a0a983-92a6-7272-8140-ae4b563b1eb8.gz.metadata.json",
-        "timestamp-ms": 1789550367398
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00000-01a11af2-8b26-7093-816a-18469ec6d984.gz.metadata.json",
+        "timestamp-ms": 1791453465382
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00001-01a0a983-92e3-7633-9456-87cc241dad43.gz.metadata.json",
-        "timestamp-ms": 1789550366000
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00001-01a11af2-8b4c-74d3-be4f-2b0459265103.gz.metadata.json",
+        "timestamp-ms": 1791453465000
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00002-01a0a983-9301-7601-a7b6-4049c82d3f0d.gz.metadata.json",
-        "timestamp-ms": 1789550367489
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00002-01a11af2-8b5e-72f1-a1aa-fd8193d259f1.gz.metadata.json",
+        "timestamp-ms": 1791453465437
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00003-01a0a983-9322-7413-8fa4-9a5162d151b9.gz.metadata.json",
-        "timestamp-ms": 1789550367522
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00003-01a11af2-8b72-7e32-ad6f-7755a0f26472.gz.metadata.json",
+        "timestamp-ms": 1791453465458
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00004-01a0a983-9342-75a0-90c8-1105a3995d46.gz.metadata.json",
-        "timestamp-ms": 1789550367554
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00004-01a11af2-8b86-73c1-8aca-0d09d3acf5e4.gz.metadata.json",
+        "timestamp-ms": 1791453465478
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00005-01a0a983-9360-7642-8d14-a0000a2a0a6a.gz.metadata.json",
-        "timestamp-ms": 1789550367000
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00005-01a11af2-8b9a-7593-8280-ebc886b6fce7.gz.metadata.json",
+        "timestamp-ms": 1791453466000
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00006-01a0a983-937b-79d0-bbcb-8bfe39e07834.gz.metadata.json",
-        "timestamp-ms": 1789550368000
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00006-01a11af2-8bb0-7373-9a22-f3d3da310faa.gz.metadata.json",
+        "timestamp-ms": 1791453467000
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00007-01a0a983-9399-7eb0-9d77-6baaeb31a9ff.gz.metadata.json",
-        "timestamp-ms": 1789550367641
+        "metadata-file": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00007-01a11af2-8bc1-7d52-ad7d-07093c02ec46.gz.metadata.json",
+        "timestamp-ms": 1791453465537
       }
     ],
     "next-row-id": 140,
     "partition-specs": [
+      {
+        "fields": [
+          {
+            "field-id": 1000,
+            "name": "sold_day",
+            "source-id": 3,
+            "transform": "day"
+          }
+        ],
+        "spec-id": 0
+      },
       {
         "fields": [
           {
@@ -68,17 +79,6 @@
           }
         ],
         "spec-id": 1
-      },
-      {
-        "fields": [
-          {
-            "field-id": 1000,
-            "name": "sold_day",
-            "source-id": 3,
-            "transform": "day"
-          }
-        ],
-        "spec-id": 0
       }
     ],
     "properties": {
@@ -92,123 +92,6 @@
       }
     },
     "schemas": [
-      {
-        "fields": [
-          {
-            "id": 1,
-            "name": "id",
-            "required": true,
-            "type": "long"
-          },
-          {
-            "id": 2,
-            "name": "sku",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "id": 3,
-            "name": "sold_at",
-            "required": true,
-            "type": "timestamp"
-          },
-          {
-            "id": 4,
-            "name": "sold_on",
-            "required": false,
-            "type": "date"
-          },
-          {
-            "id": 5,
-            "name": "opened_at",
-            "required": false,
-            "type": "time"
-          },
-          {
-            "id": 6,
-            "name": "ratio",
-            "required": false,
-            "type": "float"
-          },
-          {
-            "id": 7,
-            "name": "qty",
-            "required": false,
-            "type": "int"
-          },
-          {
-            "id": 8,
-            "name": "flag",
-            "required": false,
-            "type": "boolean"
-          },
-          {
-            "id": 9,
-            "name": "digest",
-            "required": false,
-            "type": "fixed[16]"
-          },
-          {
-            "id": 10,
-            "name": "legacy_note",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "id": 11,
-            "name": "lines",
-            "required": false,
-            "type": {
-              "element": {
-                "fields": [
-                  {
-                    "id": 14,
-                    "name": "line_no",
-                    "required": true,
-                    "type": "int"
-                  },
-                  {
-                    "doc": "Free text",
-                    "id": 15,
-                    "name": "note",
-                    "required": false,
-                    "type": "string"
-                  }
-                ],
-                "type": "struct"
-              },
-              "element-id": 13,
-              "element-required": false,
-              "type": "list"
-            }
-          },
-          {
-            "id": 12,
-            "name": "attrs",
-            "required": false,
-            "type": {
-              "key": "string",
-              "key-id": 16,
-              "type": "map",
-              "value": {
-                "fields": [
-                  {
-                    "id": 18,
-                    "name": "v",
-                    "required": false,
-                    "type": "double"
-                  }
-                ],
-                "type": "struct"
-              },
-              "value-id": 17,
-              "value-required": false
-            }
-          }
-        ],
-        "schema-id": 0,
-        "type": "struct"
-      },
       {
         "fields": [
           {
@@ -335,16 +218,133 @@
         ],
         "schema-id": 1,
         "type": "struct"
+      },
+      {
+        "fields": [
+          {
+            "id": 1,
+            "name": "id",
+            "required": true,
+            "type": "long"
+          },
+          {
+            "id": 2,
+            "name": "sku",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "id": 3,
+            "name": "sold_at",
+            "required": true,
+            "type": "timestamp"
+          },
+          {
+            "id": 4,
+            "name": "sold_on",
+            "required": false,
+            "type": "date"
+          },
+          {
+            "id": 5,
+            "name": "opened_at",
+            "required": false,
+            "type": "time"
+          },
+          {
+            "id": 6,
+            "name": "ratio",
+            "required": false,
+            "type": "float"
+          },
+          {
+            "id": 7,
+            "name": "qty",
+            "required": false,
+            "type": "int"
+          },
+          {
+            "id": 8,
+            "name": "flag",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "id": 9,
+            "name": "digest",
+            "required": false,
+            "type": "fixed[16]"
+          },
+          {
+            "id": 10,
+            "name": "legacy_note",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "id": 11,
+            "name": "lines",
+            "required": false,
+            "type": {
+              "element": {
+                "fields": [
+                  {
+                    "id": 14,
+                    "name": "line_no",
+                    "required": true,
+                    "type": "int"
+                  },
+                  {
+                    "doc": "Free text",
+                    "id": 15,
+                    "name": "note",
+                    "required": false,
+                    "type": "string"
+                  }
+                ],
+                "type": "struct"
+              },
+              "element-id": 13,
+              "element-required": false,
+              "type": "list"
+            }
+          },
+          {
+            "id": 12,
+            "name": "attrs",
+            "required": false,
+            "type": {
+              "key": "string",
+              "key-id": 16,
+              "type": "map",
+              "value": {
+                "fields": [
+                  {
+                    "id": 18,
+                    "name": "v",
+                    "required": false,
+                    "type": "double"
+                  }
+                ],
+                "type": "struct"
+              },
+              "value-id": 17,
+              "value-required": false
+            }
+          }
+        ],
+        "schema-id": 0,
+        "type": "struct"
       }
     ],
     "snapshot-log": [
       {
         "snapshot-id": 5002,
-        "timestamp-ms": 1789550367000
+        "timestamp-ms": 1791453466000
       },
       {
         "snapshot-id": 5003,
-        "timestamp-ms": 1789550368000
+        "timestamp-ms": 1791453467000
       }
     ],
     "snapshots": [
@@ -366,7 +366,7 @@
           "total-files-size": "5376",
           "total-records": "110"
         },
-        "timestamp-ms": 1789550368000
+        "timestamp-ms": 1791453467000
       },
       {
         "added-rows": 40,
@@ -389,7 +389,7 @@
           "total-files-size": "5120",
           "total-records": "115"
         },
-        "timestamp-ms": 1789550367000
+        "timestamp-ms": 1791453466000
       }
     ],
     "sort-orders": [
@@ -422,7 +422,7 @@
         "order-id": 2
       }
     ],
-    "table-uuid": "01a0a983-92a6-7272-8140-ae359d9642d8"
+    "table-uuid": "01a11af2-8b26-7093-816a-1831c4bc4b7e"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a983-92a6-7272-8140-ae359d9642d8/metadata/00008-01a0a983-93b5-7f72-a843-e865bf9b6448.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a11af2-8b26-7093-816a-1831c4bc4b7e/metadata/00008-01a11af2-8bd4-7693-bc93-e7ab6c3bbcc5.gz.metadata.json"
 }

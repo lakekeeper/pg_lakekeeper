@@ -8,16 +8,16 @@
     "last-column-id": 11,
     "last-partition-id": 1000,
     "last-sequence-number": 2,
-    "last-updated-ms": 1789550367000,
-    "location": "s3://warehouse/hard/01a0a983-9050-71b0-bae1-983bcbfcb1ba",
+    "last-updated-ms": 1791453466000,
+    "location": "s3://warehouse/hard/01a11af2-89c9-7d01-9b5c-8b526777f564",
     "metadata-log": [
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-9050-71b0-bae1-983bcbfcb1ba/metadata/00000-01a0a983-9050-71b0-bae1-984820f46a38.gz.metadata.json",
-        "timestamp-ms": 1789550366801
+        "metadata-file": "s3://warehouse/hard/01a11af2-89c9-7d01-9b5c-8b526777f564/metadata/00000-01a11af2-89c9-7d01-9b5c-8b644df39fbb.gz.metadata.json",
+        "timestamp-ms": 1791453465034
       },
       {
-        "metadata-file": "s3://warehouse/hard/01a0a983-9050-71b0-bae1-983bcbfcb1ba/metadata/00001-01a0a983-90b8-7b50-b69c-9f3162075946.gz.metadata.json",
-        "timestamp-ms": 1789550366000
+        "metadata-file": "s3://warehouse/hard/01a11af2-89c9-7d01-9b5c-8b526777f564/metadata/00001-01a11af2-8a01-79c0-8736-ea4ee44054ed.gz.metadata.json",
+        "timestamp-ms": 1791453465000
       }
     ],
     "partition-specs": [
@@ -136,11 +136,11 @@
     "snapshot-log": [
       {
         "snapshot-id": 3001,
-        "timestamp-ms": 1789550366000
+        "timestamp-ms": 1791453465000
       },
       {
         "snapshot-id": 3002,
-        "timestamp-ms": 1789550367000
+        "timestamp-ms": 1791453466000
       }
     ],
     "snapshots": [
@@ -162,7 +162,7 @@
           "total-files-size": "3072",
           "total-records": "150"
         },
-        "timestamp-ms": 1789550367000
+        "timestamp-ms": 1791453466000
       },
       {
         "manifest-list": "s3://warehouse/hard/sales/eu/orders/metadata/snap-3001.avro",
@@ -178,7 +178,7 @@
           "total-files-size": "2048",
           "total-records": "100"
         },
-        "timestamp-ms": 1789550366000
+        "timestamp-ms": 1791453465000
       }
     ],
     "sort-orders": [
@@ -212,7 +212,7 @@
         "statistics-path": "s3://warehouse/hard/sales/eu/orders/metadata/stats-3002.puffin"
       }
     ],
-    "table-uuid": "01a0a983-9050-71b0-bae1-983bcbfcb1ba"
+    "table-uuid": "01a11af2-89c9-7d01-9b5c-8b526777f564"
   },
-  "metadata-location": "s3://warehouse/hard/01a0a983-9050-71b0-bae1-983bcbfcb1ba/metadata/00002-01a0a983-90f1-7901-854c-cf3a82aa681c.gz.metadata.json"
+  "metadata-location": "s3://warehouse/hard/01a11af2-89c9-7d01-9b5c-8b526777f564/metadata/00002-01a11af2-8a1e-7951-abd2-80b284d20849.gz.metadata.json"
 }

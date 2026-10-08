@@ -2,12 +2,12 @@
   "identifiers": [
     {
       "format": "delta",
-      "id": "01a0a983-9422-7f63-9db9-391abe7cec6a",
+      "id": "01a11af2-8c1f-7421-bc00-365d7ffcaa3d",
       "name": "delta_events",
       "namespace": [
         "logs"
       ]
     }
   ],
-  "next-page-token": "MSYxNzg5NTUwMzY3Nzc4OTU3JjAxYTBhOTgzLTk0MjItN2Y2My05ZGI5LTM5MWFiZTdjZWM2YQ"
+  "next-page-token": "MSYxNzkxNDUzNDY1NjMyMTUxJjAxYTExYWYyLThjMWYtNzQyMS1iYzAwLTM2NWQ3ZmZjYWEzZA"
 }
